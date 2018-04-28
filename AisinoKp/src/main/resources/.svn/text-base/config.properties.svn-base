@@ -1,0 +1,141 @@
+#hibernate.dialect=org.hibernate.dialect.OracleDialect
+#hibernate.validationQuery=SELECT 1 FROM DUAL
+#jdbc.driverClassName=net.sf.log4jdbc.DriverSpy
+#jdbc.url= jdbc\:log4jdbc\:oracle\:thin\:@192.168.88.236\:1521\:LZKP
+#jdbc.username=SSHE
+#jdbc.password=123qwe
+#
+#hibernate.dialect2=org.hibernate.dialect.OracleDialect
+#hibernate.validationQuery2=SELECT 1 FROM DUAL
+#jdbc.driverClassName2=net.sf.log4jdbc.DriverSpy
+#jdbc.url2=jdbc\:log4jdbc\:oracle\:thin\:@192.168.88.236\:1521\:LZKP
+#jdbc.username2=SSHE
+#jdbc.password2=123qwe
+#
+#hibernate.dialect3=org.hibernate.dialect.OracleDialect
+#hibernate.validationQuery3=SELECT 1 FROM DUAL
+#jdbc.driverClassName3=net.sf.log4jdbc.DriverSpy
+#jdbc.url3=jdbc\:log4jdbc\:oracle\:thin\:@192.168.88.236\:1521\:LZKP
+#jdbc.username3=SSHE
+#jdbc.password3=123qwe
+
+hibernate.dialect=org.hibernate.dialect.SQLServerDialect
+hibernate.validationQuery=SELECT 1 
+jdbc.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver 
+jdbc.url= XJ1ktMqLeKmBDG7fHnXSiJo6X6A/wk1ZbVhn1HyIlZAMXRVZLBWztnzlNTteCsVdWsqlRMOh6TrkqWXEo+u7aM1Z+1/iIGW2C9upKORiR0lV1El8rUD0TbjcBfvAji3B67Va8jLz8PcnFHce0xhciIP9RzobUiHjdojaYebU6GA=
+#jdbc.username=sa
+#jdbc.password=Schtjs123
+jdbc.username=jqDOFAKRW11POVPsPWRLQFmUr5j0KsNrSmHYGzFmnwF7LkKXrcbCjGV3Bbs35pH/DlO0pHELfBLtF2kjEkUJA/aEzD2gPm4QrWvmnrV5cSK52H8bDkCrjWG/YN8W3SaEjbrDdyPX8z/JCgN7PSgMBdQR0vr72V7fCWKCM3Dskfo=
+jdbc.password=CApfN+IpHKz1E8Vj302JG96L0XC4rwB/7QLkrsV5KlPrjks+q10pNfoAEnDS65NweJGCkAXCEjNb7tuevR6GZjPscyP2u0JDK9Rz82Cq79NJZQpn6l2OeJ9TnOoEeK+9fMtO8CpfnoDxAXBw660OGX/lNY2fptte2qC+/IcmVew=
+#jdbc.url=jdbc:sqlserver://192.168.1.126:1433;DatabaseName=aisinoKp
+#jdbc.username=sa
+#jdbc.password=soft1999
+
+hibernate.dialect2=org.hibernate.dialect.SQLServerDialect
+hibernate.validationQuery2=SELECT 1 
+jdbc.driverClassName2=com.microsoft.sqlserver.jdbc.SQLServerDriver 
+jdbc.url2= XJ1ktMqLeKmBDG7fHnXSiJo6X6A/wk1ZbVhn1HyIlZAMXRVZLBWztnzlNTteCsVdWsqlRMOh6TrkqWXEo+u7aM1Z+1/iIGW2C9upKORiR0lV1El8rUD0TbjcBfvAji3B67Va8jLz8PcnFHce0xhciIP9RzobUiHjdojaYebU6GA=
+jdbc.username2=jqDOFAKRW11POVPsPWRLQFmUr5j0KsNrSmHYGzFmnwF7LkKXrcbCjGV3Bbs35pH/DlO0pHELfBLtF2kjEkUJA/aEzD2gPm4QrWvmnrV5cSK52H8bDkCrjWG/YN8W3SaEjbrDdyPX8z/JCgN7PSgMBdQR0vr72V7fCWKCM3Dskfo=
+jdbc.password2=CApfN+IpHKz1E8Vj302JG96L0XC4rwB/7QLkrsV5KlPrjks+q10pNfoAEnDS65NweJGCkAXCEjNb7tuevR6GZjPscyP2u0JDK9Rz82Cq79NJZQpn6l2OeJ9TnOoEeK+9fMtO8CpfnoDxAXBw660OGX/lNY2fptte2qC+/IcmVew=
+#jdbc.url2=jdbc:sqlserver://192.168.1.126:1433;DatabaseName=drugyb
+#jdbc.username2=sa
+#jdbc.password2=soft1999
+
+hibernate.dialect3=org.hibernate.dialect.SQLServerDialect
+hibernate.validationQuery3=SELECT 1 
+jdbc.driverClassName3=com.microsoft.sqlserver.jdbc.SQLServerDriver 
+jdbc.url3= XJ1ktMqLeKmBDG7fHnXSiJo6X6A/wk1ZbVhn1HyIlZAMXRVZLBWztnzlNTteCsVdWsqlRMOh6TrkqWXEo+u7aM1Z+1/iIGW2C9upKORiR0lV1El8rUD0TbjcBfvAji3B67Va8jLz8PcnFHce0xhciIP9RzobUiHjdojaYebU6GA=
+jdbc.username3=jqDOFAKRW11POVPsPWRLQFmUr5j0KsNrSmHYGzFmnwF7LkKXrcbCjGV3Bbs35pH/DlO0pHELfBLtF2kjEkUJA/aEzD2gPm4QrWvmnrV5cSK52H8bDkCrjWG/YN8W3SaEjbrDdyPX8z/JCgN7PSgMBdQR0vr72V7fCWKCM3Dskfo=
+jdbc.password3=CApfN+IpHKz1E8Vj302JG96L0XC4rwB/7QLkrsV5KlPrjks+q10pNfoAEnDS65NweJGCkAXCEjNb7tuevR6GZjPscyP2u0JDK9Rz82Cq79NJZQpn6l2OeJ9TnOoEeK+9fMtO8CpfnoDxAXBw660OGX/lNY2fptte2qC+/IcmVew=
+#jdbc.url3=jdbc:sqlserver://192.168.1.126:1433;DatabaseName=aisinoKp
+#jdbc.username3=sa
+#jdbc.password3=soft1999
+
+#localhost VM
+#hibernate.dialect=org.hibernate.dialect.OracleDialect
+#hibernate.validationQuery=SELECT 1 FROM DUAL
+#jdbc.driverClassName=net.sf.log4jdbc.DriverSpy
+#jdbc.url= jdbc\:log4jdbc\:oracle\:thin\:@192.168.88.120\:1521\:AIS20160620173509
+#jdbc.username=sa
+#jdbc.password=123qwe
+#
+#hibernate.dialect2=org.hibernate.dialect.OracleDialect
+#hibernate.validationQuery2=SELECT 1 FROM DUAL
+#jdbc.driverClassName2=net.sf.log4jdbc.DriverSpy
+#jdbc.url2=jdbc\:log4jdbc\:oracle\:thin\:@192.168.88.120\:1521\:AIS20160620173509
+#jdbc.username2=sa
+#jdbc.password2=123qwe
+#
+#hibernate.dialect3=org.hibernate.dialect.OracleDialect
+#hibernate.validationQuery3=SELECT 1 FROM DUAL
+#jdbc.driverClassName3=net.sf.log4jdbc.DriverSpy
+#jdbc.url3=jdbc\:log4jdbc\:oracle\:thin\:@192.168.88.120\:1521\:AIS20160620173509
+#jdbc.username3=sa
+#jdbc.password3=123qwe
+
+
+#jdbc.driverClassName2=com.mysql.jdbc.Driver
+#jdbc.url2=jdbc:mysql://127.0.0.1:3306/xiaoche
+#jdbc.username2=root
+#jdbc.password2=admin
+
+
+#hibernate.dialect=org.hibernate.dialect.H2Dialect
+#hibernate.validationQuery=SELECT 1
+#jdbc.driverClassName=org.h2.Driver
+#jdbc.driverClassName=net.sf.log4jdbc.DriverSpy
+#jdbc.url=jdbc:h2:mem:syproDb
+#jdbc.url=jdbc:log4jdbc:h2:mem:syproDb
+#jdbc.username=sa
+#jdbc.password=
+
+
+
+hibernate.hbm2ddl.auto=none
+hibernate.show_sql=true
+hibernate.format_sql=true
+hibernate.use_sql_comments=false
+#hibernate.dialect=aisino.reportform.util.base.MySQLServerDialect
+
+sessionInfoName=sessionInfo
+
+uploadPath=/ssheUploadFile
+
+#Software configurations
+TICKET_MAXADDTICKETS=10000
+
+#ssflbmbbh
+ssflbmbbh=17.0
+#taxserver
+jk_url=http://192.168.86.34:8086/djxxcxInterface
+#PDF
+pdf_url=http://192.168.86.40:8023/katu_admin/index.php//C_Invoice_Info/upload_invoice
+
+##duanxin
+#CorpID=CDJS003787
+#Pwd=zm0513@
+#StrUrl=https://sdk2.028lk.com/sdk2/BatchSend2.aspx
+
+##Edb
+#dbhost = edb_a87762
+#appkey = cbcf2a71
+#appscret = e0715a50aa7f4c8fab9d92dc5127b52f
+#token = 8e07ad25b9224398a7ae67468bffbeab
+#serviceUrl = http://vip3016.edb01.com.cn/rest/index.aspx
+#page_size = 2000
+########################################
+
+##Gy
+appkey=118798
+page_size=10
+sessionkey=dd16e48681ee4f9bbc64657cfad867a4
+secret=0799ac7c1c3542ab9a9377e559fee5c7
+param_url=http://v2.api.guanyierp.com/rest/erp_open
+########################################
+
+max_zkl = 0.5
+YHZCBS=1
+LSLBS=1
+
+#init Eorder Einvoice
+init_flag=0

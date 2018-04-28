@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/webapp/error
+END
+404.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/webapp/error/404.jsp
+END
+strutsException.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/webapp/error/strutsException.jsp
+END
+noSecurity.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/webapp/error/noSecurity.jsp
+END
+500.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/webapp/error/500.jsp
+END
+noSession.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/webapp/error/noSession.jsp
+END

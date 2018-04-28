@@ -1,0 +1,154 @@
+package aisino.reportform.service.fpmng.fsg.Impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.poi.ss.formula.functions.T;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+import aisino.reportform.model.fpmng.OrderDataZ;
+import aisino.reportform.model.fsg.Details;
+import aisino.reportform.model.fsg.FsgOrderHead;
+import aisino.reportform.model.fsg.FsgShop;
+import aisino.reportform.service.fpmng.fsg.FsgServiceI;
+import aisino.reportform.service.impl.BaseServiceImpl;
+import aisino.reportform.util.base.BeanUtils;
+import aisino.reportform.util.base.BigdecimalUtil;
+import aisino.reportform.util.base.gy.ERPSignUtil;
+
+@Service
+public class FsgServiceImpl extends BaseServiceImpl<T> implements FsgServiceI{
+
+	/**
+	 * 
+	 * @Title: checkInvoice_tidIsExist
+	 * @Description: 检查djhm是否已存在
+	 * @author 曹梦媛
+	 * @date 2018年1月4日 下午4:45:58
+	 * @param: @param invoice_tid
+	 * @param: @return 
+	 * @return: boolean   
+	 * @throws
+	 */
+	public boolean checkInvoice_tidIsExist(String invoice_tid) {
+		String sql = "select * from t_orderdata where djhm = '"+invoice_tid+"' ";
+		List<HashMap> list=findBySql(sql);
+		int rs = list.size();
+		if (rs >= 1) {
+			return  true;
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
+	public List<OrderDataZ> getGyResponseMsg(JSONObject object) {
+		//解析res,格式为json
+        //JSONObject object=JSON.parseObject(result_s);
+        Object deliverysObj=object.get("deliverys");
+        List<FsgOrderHead> orderlist=JSON.parseArray(deliverysObj.toString(), FsgOrderHead.class);
+		
+        List<OrderDataZ> list=new ArrayList<>();
+        for (int i = 0; i < orderlist.size(); i++) {
+        //for (int i = 0; i < total_results; i++) {
+        	FsgOrderHead fsgOrderHead=orderlist.get(i);
+        	//orderlist.get(i).getInvoice_tid_item().size();
+        	boolean isExist_Code = false;
+        	isExist_Code = checkInvoice_tidIsExist(fsgOrderHead.getCode());
+        	if (!isExist_Code) {
+	        	//获取商品行明细
+	        	List<Details> itemlist = fsgOrderHead.getDetails();
+				for(int j=0; j<itemlist.size(); j++){
+					Details item = itemlist.get(j);
+					
+					OrderDataZ orderdata=new OrderDataZ();
+					orderdata.setDjhm(fsgOrderHead.getCode());
+					orderdata.setGfmc(fsgOrderHead.getReceiver_name());
+					String gfdzdh=(fsgOrderHead.getReceiver_address()+","+fsgOrderHead.getReceiver_mobile()).replaceAll(" ", "").replaceAll(".", "");
+					orderdata.setGfdzdh(gfdzdh);
+					orderdata.setFpzl("51");
+					orderdata.setSpxh(j);
+					//接口数据无含税标识、税率、税收分类编码、商品号码
+					orderdata.setSphm(item.getItem_code());
+					orderdata.setSpmc(item.getItem_name());
+					
+					String itemProperty = item.getSku_name();
+					orderdata.setGgxh(itemProperty);
+					orderdata.setSl(item.getQty());
+					BigDecimal amount = item.getAmount_after().add(item.getPost_fee());
+					orderdata.setDj(amount.divide(item.getQty(), 6, BigDecimal.ROUND_HALF_UP)); //四舍五入, 保留6位
+					orderdata.setJe(amount);
+					orderdata.setSlv(new BigDecimal(17));
+					orderdata.setMobile(fsgOrderHead.getReceiver_mobile().trim());
+					orderdata.setBz(fsgOrderHead.getShop_name()+"+订单号:"+fsgOrderHead.getCode());
+					
+					if("1".equals(item.getIs_gift())) {
+						//赠品, 金额单价查询, 添加折扣行
+						String pr = getZpPrice(item.getItem_code());	//获取赠品对应实际价格
+						BigDecimal price = new BigDecimal(pr);
+						orderdata.setDj(price);
+						BigDecimal total = price.multiply(item.getQty());
+						orderdata.setJe(total);
+						
+						OrderDataZ zk_orderdata = new OrderDataZ();
+						BeanUtils.copyNotNullProperties(orderdata, zk_orderdata);
+						BigDecimal sl = item.getQty().negate();
+						zk_orderdata.setSl(sl);
+						zk_orderdata.setJe(total.negate());
+					
+						list.add(zk_orderdata);
+						
+					} 
+					list.add(orderdata);
+//					odservice.save(orderdata);
+				}	
+			}	//end if(!isExist_invoice_tid)
+		}
+		
+        return list;
+	}
+	
+	@Override
+	public List<HashMap> getGyShops(Object deliverysObj) {
+		//解析res,格式为json
+//		JSONObject object=JSON.parseObject(result_s);
+//		Object deliverysObj=object.get("shops");
+		List<FsgShop> shoplist=JSON.parseArray(deliverysObj.toString(), FsgShop.class);
+		
+		List<HashMap> list=new ArrayList<>();
+		for (int i = 0; i < shoplist.size(); i++) {
+			HashMap hm = new HashMap();
+			FsgShop fsgShop = shoplist.get(i);
+			hm.put("shop_code", fsgShop.getCode());
+			hm.put("shop_name", fsgShop.getName());
+			list.add(hm);
+		}
+		
+		return list;
+	}
+
+	@Override
+	public String getZpPrice(String item_code) {
+		String method = "gy.erp.items.get";
+		
+		String result_s = ERPSignUtil.getResponseMsg(method, null, null, 1, null, item_code);
+		JSONObject rs_object=JSON.parseObject(result_s);
+		String suc_flag = rs_object.get("success").toString();
+		if ("true".equals(suc_flag)) {
+			Object itemObj = rs_object.get("items");
+			JSONArray itemJobj = JSON.parseArray(itemObj.toString());
+			Object itemObj1 = itemJobj.get(0);
+			String price = JSON.parseObject(itemObj1.toString()).getString("sales_price");
+			return price;
+		} else {
+			System.out.println(rs_object.get("errorDesc").toString());
+			return null;
+		}
+	}
+}

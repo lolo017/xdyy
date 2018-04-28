@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ErrorLogMapper">
+	
+	<!-- ================================================================================================== -->
+	
+	
+	
+	
+	<!-- 保存错误信息 -->
+	<insert id="saveE" parameterType="pd">
+		insert into "T_SIGNATURE_ERROR_LOG" (
+			"ID",
+			"TAXCODE",
+			"SIG_DATE",
+			"MESSAGE",
+			"CODE",
+			"DATAEXCHANGEID"
+		) values (
+			seq_signature_error.NEXTVAL,
+			#{TAXCODE},
+			to_date(#{SIG_DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{MESSAGE},
+			#{CODE},
+			#{DATAEXCHANGEID}
+		)
+		
+	</insert>
+	
+	<!-- 保存签章错误的开票报文 -->
+	<insert id="saveX" parameterType="pd">
+		insert into "T_SIGNATURE_ERROR_XML" (		
+			"DATAEXCHANGEID",
+			"XML",
+			"QZ_XML",
+			"INVOICE_NUMBER",
+			"INVOICE_CODE",
+			"IS_QZ",
+			"FAIL_COUNT",
+			"LAST_DATE"
+		) values (
+			#{DATAEXCHANGEID},
+			#{XML,jdbcType=CLOB},
+			#{QZ_XML,jdbcType=CLOB},
+			#{INVOICE_NUMBER},
+			#{INVOICE_CODE},
+			'0',
+			1,
+			sysdate
+			
+		)
+		
+	</insert>
+	<select id="getErrorQzXml" parameterType="pd" resultType="pd">
+	SELECT * FROM(
+	select t.xml, t.qz_xml ,t.dataexchangeid from T_SIGNATURE_ERROR_XML t where 
+	t.is_qz='0' and t.qz_xml is not null and t.fail_count<![CDATA[<]]>7 
+	 order by t.last_date
+	) WHERE ROWNUM=1
+	
+	</select>
+	<update id="updateQzSuccess" parameterType="pd">
+		update t_signature_error_xml tt set tt.is_qz='1',tt.last_date=sysdate 
+		where  tt.dataexchangeid=#{ID} 
+
+	</update>
+	<update id="updateQzFail" parameterType="pd">
+		update t_signature_error_xml tt set tt.last_date=sysdate ,tt.fail_count=fail_count+1
+		where  tt.dataexchangeid=#{ID} 
+
+	</update>
+</mapper>

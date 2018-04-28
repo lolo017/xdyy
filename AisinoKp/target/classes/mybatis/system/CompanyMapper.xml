@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CompanyMapper">
+	
+	<!-- ================================================================================================== -->
+	
+	<!-- 通过税号获取数据 -->
+	<select id="findObj" parameterType="pd" resultType="pd">
+		select 
+			"ID",
+			"TAXCODE",
+			"COMPANY",
+			"REGDATE",
+			"USERNAME",
+			"PASSWORD",
+			"AUTHORIZATIONCODE",
+			"REGCODE",
+			"MODIFIED_DATE"
+		from 
+			"T_EINVOICE_COMPANY"
+		where 1=1
+		<if test="TaxCode !=null and TaxCode != ''">
+			and "TAXCODE" = #{TaxCode}
+		</if>
+		<if test="COMPANY !=null and COMPANY != ''">
+			and "EBS_NAME" = #{COMPANY}
+		</if>
+		
+	</select>
+	
+	<insert id="insertFpKjmx" parameterType="pd">
+		insert into T_FP_KJMX (
+			INVOICE_CODE,
+			INVOICE_NUMBER,
+			SPMC,			
+			SM,			
+			SL,			
+			GGXH,			
+			JLDW,			
+			SPSL,			
+			SPDJ,			
+			SPJE,			
+			FPHXZ,			
+			HSJBZ,			
+			SE,			
+			SPBM,			
+			ZXBM,			
+			YHZCBS,		
+			LSLBS,			
+			ZZSTSGL,		
+			KCE	
+		)
+		VALUES(
+			#{INVOICE_CODE},
+			#{INVOICE_NUMBER},
+			#{SPMC,jdbcType=VARCHAR},			
+			#{SM,jdbcType=VARCHAR},			
+			#{SL,jdbcType=VARCHAR},			
+			#{GGXH,jdbcType=VARCHAR},			
+			#{JLDW,jdbcType=VARCHAR},			
+			#{SPSL,jdbcType=VARCHAR},			
+			#{SPDJ,jdbcType=VARCHAR},			
+			#{SPJE,jdbcType=VARCHAR},			
+			#{FPHXZ,jdbcType=VARCHAR},			
+			#{HSJBZ,jdbcType=VARCHAR},			
+			#{SE,jdbcType=VARCHAR},			
+			#{SPBM,jdbcType=VARCHAR},			
+			#{ZXBM,jdbcType=VARCHAR},			
+			#{YHZCBS,jdbcType=VARCHAR},		
+			#{LSLBS,jdbcType=VARCHAR},			
+			#{ZZSTSGL,jdbcType=VARCHAR},		
+			#{KCE,jdbcType=VARCHAR}	
+		)
+	</insert>
+	
+	
+	
+	
+</mapper>

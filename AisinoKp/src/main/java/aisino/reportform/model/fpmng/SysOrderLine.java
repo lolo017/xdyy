@@ -1,0 +1,395 @@
+package aisino.reportform.model.fpmng;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Delete;
+/**
+ * 
+* @Title:SysOrderLine 
+* @Description: 系统订单明细
+* Company    JS-YFB LTD
+* @author 曹梦媛
+* @version V1.0    
+* @date 2017年9月22日 上午10:12:34
+ */
+@Entity
+@Table(name = "T_SYSORDERLINE",schema = "dbo",catalog = "aisinoKpDz")
+public class SysOrderLine implements java.io.Serializable{
+	private static final long serialVersionUID = 1L;
+	
+	private String olid;	//	OLID	varchar(36)	本表主键	
+//	private String ohid;	//	OHID	varchar(36)	外键: 发票头/系统订单头主键OHID
+	private SysOrderHead sysOrderHead;
+	private Date createtime;	//	CREATETIME	datetime	创建时间	
+	private String fpzl;	//	FPZL	varchar(2)	发票种类	0:专票,2:普票,41:卷票,51:电子发票
+	private String gfhm;	//	GFHM	varchar(36)	购方代码	
+	private String gfmc;	//	GFMC	varchar(256)	购方名称	
+	private String gfsh;	//	GFSH	varchar(36)	购方税号	
+	private String gfyhzh;	//	GFYHZH	varchar(256)	购方银行账户	
+	private String gfdzdh;	//	GFDZDH	varchar(512)	购方地址电话	
+	private String bz;		//	BZ	varchar(512)	备注	
+	private String skr;		//	SKR	varchar(36)	收款人	
+	private String fhr;		//	FHR	varchar(36)	复核人	
+	private int spxh;		//	SPXH	int(11)	商品序号	
+	private String sphm;	//	SPHM	varchar(36)	商品号码	
+	private String spmc;	//	SPMC	varchar(256)	商品名称	
+	private String ggxh;	//	GGXH	varchar(36)	规格型号	
+	private String dw;		//	DW	varchar(36)	单位	
+	private BigDecimal sl;	//	SL	decimal(15,2)	数量	
+	private BigDecimal dj;	//	DJ	decimal(30,16)	单价	商品实际价格(调价后的价格)
+	private BigDecimal je;	//	JE	decimal(30,16)	金额	
+	private String hsbz;	//	HSBZ	varchar(2)	含税标志	1:含税,0:不含税
+	private BigDecimal slv;	//	SLV	decimal(4,2)	税率	可为0.17  0.13   0.11  0.06  0.03  0.00
+	private String ssflbm;	//	SSFLBM	varchar(36)	税收分类编码	
+	private String mobile;	//	MOBILE	varchar(36)	手机号	
+	private String email;	//	EMAIL	varchar(36)	邮箱	
+	private String kpbz;
+	
+	private String batchno;
+	private int fenpiaobiaoshi;
+	
+	private List<OrderDataZ> orderDataZs=new ArrayList<>();
+	
+	@Column(name="KPBZ",length=2)
+	public String getKpbz() {
+		return kpbz;
+	}
+	public void setKpbz(String kpbz) {
+		this.kpbz = kpbz;
+	}
+	
+	
+	@Id
+	@Column(name = "OLID", unique = true, nullable = false, length = 36)
+	public String getOlid() {
+		if (!StringUtils.isBlank(this.olid)) {
+			return olid;
+		}
+		return UUID.randomUUID().toString();
+	}
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "t_order_line", schema = "dbo",catalog="aisinoKpDz", joinColumns = { @JoinColumn(name = "OLID", nullable = false, updatable = false,referencedColumnName="olid")}, inverseJoinColumns = { @JoinColumn(name = "ODID", nullable = false, updatable = false,referencedColumnName="odid"),@JoinColumn(name = "DJHM", nullable = false, updatable = false,referencedColumnName="djhm") })
+	public List<OrderDataZ> getOrderDataZs() {
+		return orderDataZs;
+	}
+	public void setOrderDataZs(List<OrderDataZ> orderDataZs) {
+		this.orderDataZs = orderDataZs;
+	}
+	public void setOlid(String olid) {
+		this.olid = olid;
+	}
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "OHID")
+	public SysOrderHead getSysOrderHead() {
+		return sysOrderHead;
+	}
+	public void setSysOrderHead(SysOrderHead sysOrderHead) {
+		this.sysOrderHead = sysOrderHead;
+	}
+	@Column(name = "CREATETIME")
+	public Date getCreatetime() {
+		return createtime;
+	}
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
+	@Column(name = "FPZL", length = 2)
+	public String getFpzl() {
+		return fpzl;
+	}
+	public void setFpzl(String fpzl) {
+		this.fpzl = fpzl;
+	}
+	@Column(name = "GFHM", length = 36)
+	public String getGfhm() {
+		return gfhm;
+	}
+	public void setGfhm(String gfhm) {
+		this.gfhm = gfhm;
+	}
+	@Column(name = "GFMC", length = 256)
+	public String getGfmc() {
+		return gfmc;
+	}
+	public void setGfmc(String gfmc) {
+		this.gfmc = gfmc;
+	}
+	@Column(name = "GFSH", length = 36)
+	public String getGfsh() {
+		return gfsh;
+	}
+	public void setGfsh(String gfsh) {
+		this.gfsh = gfsh;
+	}
+	@Column(name = "GFYHZH", length = 256)
+	public String getGfyhzh() {
+		return gfyhzh;
+	}
+	public void setGfyhzh(String gfyhzh) {
+		this.gfyhzh = gfyhzh;
+	}
+	@Column(name = "GFDZDH", length = 512)
+	public String getGfdzdh() {
+		return gfdzdh;
+	}
+	public void setGfdzdh(String gfdzdh) {
+		this.gfdzdh = gfdzdh;
+	}
+	@Column(name = "BZ", length = 512)
+	public String getBz() {
+		return bz;
+	}
+	public void setBz(String bz) {
+		this.bz = bz;
+	}
+	@Column(name = "SKR", length = 36)
+	public String getSkr() {
+		return skr;
+	}
+	public void setSkr(String skr) {
+		this.skr = skr;
+	}
+	@Column(name = "FHR", length = 36)
+	public String getFhr() {
+		return fhr;
+	}
+	public void setFhr(String fhr) {
+		this.fhr = fhr;
+	}
+	@Column(name = "SPXH")
+	public int getSpxh() {
+		return spxh;
+	}
+	public void setSpxh(int spxh) {
+		this.spxh = spxh;
+	}
+	@Column(name = "SPHM", length = 36)
+	public String getSphm() {
+		return sphm;
+	}
+	public void setSphm(String sphm) {
+		this.sphm = sphm;
+	}
+	@Column(name = "SPMC", length = 256)
+	public String getSpmc() {
+		return spmc;
+	}
+	public void setSpmc(String spmc) {
+		this.spmc = spmc;
+	}
+	@Column(name = "GGXH", length = 36)
+	public String getGgxh() {
+		return ggxh;
+	}
+	public void setGgxh(String ggxh) {
+		this.ggxh = ggxh;
+	}
+	@Column(name = "DW", length = 36)
+	public String getDw() {
+		return dw;
+	}
+	public void setDw(String dw) {
+		this.dw = dw;
+	}
+	@Column(name = "SL")
+	public BigDecimal getSl() {
+		return sl;
+	}
+	public void setSl(BigDecimal sl) {
+		this.sl = sl;
+	}
+	@Column(name = "DJ")
+	public BigDecimal getDj() {
+		return dj;
+	}
+	public void setDj(BigDecimal dj) {
+		this.dj = dj;
+	}
+	@Column(name = "JE")
+	public BigDecimal getJe() {
+		return je;
+	}
+	public void setJe(BigDecimal je) {
+		this.je = je;
+	}
+	@Column(name = "HSBZ", length = 2)
+	public String getHsbz() {
+		return hsbz;
+	}
+	public void setHsbz(String hsbz) {
+		this.hsbz = hsbz;
+	}
+	@Column(name = "SLV")
+	public BigDecimal getSlv() {
+		return slv;
+	}
+	public void setSlv(BigDecimal slv) {
+		this.slv = slv;
+	}
+	@Column(name = "SSFLBM", length = 36)
+	public String getSsflbm() {
+		return ssflbm;
+	}
+	public void setSsflbm(String ssflbm) {
+		this.ssflbm = ssflbm;
+	}
+	@Column(name = "MOBILE", length = 36)
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	@Column(name = "EMAIL", length = 36)
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
+	@Column(name="batchno")
+	public String getBatchno() {
+		return batchno;
+	}
+	public void setBatchno(String batchno) {
+		this.batchno = batchno;
+	}
+	@Column(name="fenpiaobiaoshi")
+	public int getFenpiaobiaoshi() {
+		return fenpiaobiaoshi;
+	}
+	public void setFenpiaobiaoshi(int fenpiaobiaoshi) {
+		this.fenpiaobiaoshi = fenpiaobiaoshi;
+	}
+	public boolean compare(Object obj) {
+		{
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SysOrderLine other = (SysOrderLine) obj;
+			if (dj == null) {
+				if (other.dj != null)
+					return false;
+			} else if (!dj.equals(other.dj))
+				return false;
+			if (dw == null) {
+				if (other.dw != null)
+					return false;
+			} else if (!dw.equals(other.dw))
+				return false;
+			if (fhr == null) {
+				if (other.fhr != null)
+					return false;
+			} else if (!fhr.equals(other.fhr))
+				return false;
+			if (fpzl == null) {
+				if (other.fpzl != null)
+					return false;
+			} else if (!fpzl.equals(other.fpzl))
+				return false;
+			if (gfdzdh == null) {
+				if (other.gfdzdh != null)
+					return false;
+			} else if (!gfdzdh.equals(other.gfdzdh))
+				return false;
+			if (gfhm == null) {
+				if (other.gfhm != null)
+					return false;
+			} else if (!gfhm.equals(other.gfhm))
+				return false;
+			if (gfmc == null) {
+				if (other.gfmc != null)
+					return false;
+			} else if (!gfmc.equals(other.gfmc))
+				return false;
+			if (gfsh == null) {
+				if (other.gfsh != null)
+					return false;
+			} else if (!gfsh.equals(other.gfsh))
+				return false;
+			if (gfyhzh == null) {
+				if (other.gfyhzh != null)
+					return false;
+			} else if (!gfyhzh.equals(other.gfyhzh))
+				return false;
+			if (ggxh == null) {
+				if (other.ggxh != null)
+					return false;
+			} else if (!ggxh.equals(other.ggxh))
+				return false;
+			if (hsbz == null) {
+				if (other.hsbz != null)
+					return false;
+			} else if (!hsbz.equals(other.hsbz))
+				return false;
+			if (sysOrderHead == null) {
+				if (other.sysOrderHead != null)
+					return false;
+			} else if (!sysOrderHead.equals(other.sysOrderHead))
+				return false;
+			if (skr == null) {
+				if (other.skr != null)
+					return false;
+			} else if (!skr.equals(other.skr))
+				return false;
+			if (slv == null) {
+				if (other.slv != null)
+					return false;
+			} else if (!slv.equals(other.slv))
+				return false;
+			if (sphm == null) {
+				if (other.sphm != null)
+					return false;
+			} else if (!sphm.equals(other.sphm))
+				return false;
+			if (spmc == null) {
+				if (other.spmc != null)
+					return false;
+			} else if (!spmc.equals(other.spmc))
+				return false;
+			if (ssflbm == null) {
+				if (other.ssflbm != null)
+					return false;
+			} else if (!ssflbm.equals(other.ssflbm))
+				return false;
+			if (mobile == null) {
+				if (other.mobile != null)
+					return false;
+			} else if (!mobile.equals(other.mobile))
+				return false;
+			if (email == null) {
+				if (other.email != null)
+					return false;
+			} else if (!email.equals(other.email))
+				return false;
+			return true;
+		}
+	}
+	
+}

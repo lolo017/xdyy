@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system
+END
+RoleMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/RoleMapper.xml
+END
+EinvoiceMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/EinvoiceMapper.xml
+END
+UserMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/UserMapper.xml
+END
+AppuserMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/AppuserMapper.xml
+END
+ErrorLogMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/ErrorLogMapper.xml
+END
+CompanyMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/CompanyMapper.xml
+END
+CourierMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/CourierMapper.xml
+END
+UserXMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/UserXMapper.xml
+END
+EpressMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/EpressMapper.xml
+END
+MenuMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/MenuMapper.xml
+END
+ClientsXMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/ClientsXMapper.xml
+END
+DictionariesMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/system/DictionariesMapper.xml
+END

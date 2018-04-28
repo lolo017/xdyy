@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/fpmng/Impl
+END
+SysOrderLineServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/dzfp_dyym/!svn/ver/15/trunk/AisinoKp/src/main/java/aisino/reportform/service/fpmng/Impl/SysOrderLineServiceImpl.java
+END
+VInvoiceHeadServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/fpmng/Impl/VInvoiceHeadServiceImpl.java
+END
+T_invoicedataServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/fpmng/Impl/T_invoicedataServiceImpl.java
+END
+SendMessageServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/fpmng/Impl/SendMessageServiceImpl.java
+END
+BuyerInfoServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/fpmng/Impl/BuyerInfoServiceImpl.java
+END
+SysOrderHeadServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/fpmng/Impl/SysOrderHeadServiceImpl.java
+END
+OrderDataZServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/fpmng/Impl/OrderDataZServiceImpl.java
+END

@@ -1,0 +1,227 @@
+package aisino.reportform.model.base;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+@Entity
+@Table(name = "T_INVOICE_HEAD", schema = "")
+@DynamicInsert(true)
+@DynamicUpdate(true)
+public class InvoiceHead {
+	
+	private Long id;
+	private Double total_amount;
+	private String ch_amount;
+	private String cust_name;
+	private Date create_date;
+	private String creater;
+	private Long serial_number;
+	private String org_id;
+	private String cust_id;
+	private String invoice_type;
+	private String invoice_code;
+	private String tax_type;
+	private String tax_type_id;
+	private Date order_date;
+	private Date update_date;
+	private String update_by;
+	private String cust_code;
+	private String telphone;
+	private String mobile;
+	private String addr;
+	private String fp_id;
+	private String blue_reason;
+	private Long blue_bill_id;
+	private Long status;
+	
+	
+	
+	
+	
+	@Id
+	@Column(name = "ID", unique = true, nullable = false)
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	@Column(name = "TOTAL_AMOUNT")
+	public Double getTotal_amount() {
+		return total_amount;
+	}
+	public void setTotal_amount(Double total_amount) {
+		this.total_amount = total_amount;
+	}
+	@Column(name = "CH_AMOUNT")
+	public String getCh_amount() {
+		return ch_amount;
+	}
+	public void setCh_amount(String ch_amount) {
+		this.ch_amount = ch_amount;
+	}
+	@Column(name = "CUST_NAME")
+	public String getCust_name() {
+		return cust_name;
+	}
+	public void setCust_name(String cust_name) {
+		this.cust_name = cust_name;
+	}
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "CREATE_DATE")
+	public Date getCreate_date() {
+		return create_date;
+	}
+	public void setCreate_date(Date create_date) {
+		this.create_date = create_date;
+	}
+	@Column(name = "CREATER")
+	public String getCreater() {
+		return creater;
+	}
+	public void setCreater(String creater) {
+		this.creater = creater;
+	}
+	@Column(name = "SERIAL_NUMBER")
+	public Long getSerial_number() {
+		return serial_number;
+	}
+	public void setSerial_number(Long serial_number) {
+		this.serial_number = serial_number;
+	}
+	@Column(name = "ORG_ID")
+	public String getOrg_id() {
+		return org_id;
+	}
+	public void setOrg_id(String org_id) {
+		this.org_id = org_id;
+	}
+	@Column(name = "CUST_ID")
+	public String getCust_id() {
+		return cust_id;
+	}
+	public void setCust_id(String cust_id) {
+		this.cust_id = cust_id;
+	}
+	@Column(name = "INVOICE_TYPE")
+	public String getInvoice_type() {
+		return invoice_type;
+	}
+	public void setInvoice_type(String invoice_type) {
+		this.invoice_type = invoice_type;
+	}
+	@Column(name = "INVOICE_CODE")
+	public String getInvoice_code() {
+		return invoice_code;
+	}
+	public void setInvoice_code(String invoice_code) {
+		this.invoice_code = invoice_code;
+	}
+	@Column(name = "TAX_TYPE")
+	public String getTax_type() {
+		return tax_type;
+	}
+	public void setTax_type(String tax_type) {
+		this.tax_type = tax_type;
+	}
+	@Column(name = "TAX_TYPE_ID")
+	public String getTax_type_id() {
+		return tax_type_id;
+	}
+	public void setTax_type_id(String tax_type_id) {
+		this.tax_type_id = tax_type_id;
+	}
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "ORDER_DATE")
+	public Date getOrder_date() {
+		return order_date;
+	}
+	public void setOrder_date(Date order_date) {
+		this.order_date = order_date;
+	}
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "UPDATE_DATE")
+	public Date getUpdate_date() {
+		return update_date;
+	}
+	public void setUpdate_date(Date update_date) {
+		this.update_date = update_date;
+	}
+	@Column(name = "UPDATE_BY")
+	public String getUpdate_by() {
+		return update_by;
+	}
+	public void setUpdate_by(String update_by) {
+		this.update_by = update_by;
+	}
+	@Column(name = "CUST_CODE")
+	public String getCust_code() {
+		return cust_code;
+	}
+	public void setCust_code(String cust_code) {
+		this.cust_code = cust_code;
+	}
+	@Column(name = "TELPHONE")
+	public String getTelphone() {
+		return telphone;
+	}
+	public void setTelphone(String telphone) {
+		this.telphone = telphone;
+	}
+	@Column(name = "MOBILE")
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	@Column(name = "ADDR")
+	public String getAddr() {
+		return addr;
+	}
+	public void setAddr(String addr) {
+		this.addr = addr;
+	}
+	@Column(name = "FP_ID")
+	public String getFp_id() {
+		return fp_id;
+	}
+	public void setFp_id(String fp_id) {
+		this.fp_id = fp_id;
+	}
+	@Column(name = "STATUS")
+	public Long getStatus() {
+		return status;
+	}
+	public void setStatus(Long status) {
+		this.status = status;
+	}
+	@Column(name = "BLUE_REASON")
+	public String getBlue_reason() {
+		return blue_reason;
+	}
+	public void setBlue_reason(String blue_reason) {
+		this.blue_reason = blue_reason;
+	}
+	@Column(name = "BLUE_BILL_ID")
+	public Long getBlue_bill_id() {
+		return blue_bill_id;
+	}
+	public void setBlue_bill_id(Long blue_bill_id) {
+		this.blue_bill_id = blue_bill_id;
+	}
+	
+	
+	
+	
+
+}

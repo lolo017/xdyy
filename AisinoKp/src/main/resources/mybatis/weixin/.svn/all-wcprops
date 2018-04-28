@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/weixin
+END
+CommandMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/weixin/CommandMapper.xml
+END
+ImgmsgMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/weixin/ImgmsgMapper.xml
+END
+TextmsgMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/resources/mybatis/weixin/TextmsgMapper.xml
+END

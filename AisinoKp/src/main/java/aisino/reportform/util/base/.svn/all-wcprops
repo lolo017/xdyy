@@ -1,0 +1,221 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base
+END
+SqlUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/SqlUtil.java
+END
+SessionFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/SessionFilter.java
+END
+ReflectionUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/ReflectionUtil.java
+END
+PoiUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/PoiUtil.java
+END
+IpUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/IpUtil.java
+END
+PlUploadServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/PlUploadServlet.java
+END
+ConfigUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/ConfigUtil.java
+END
+UEditorUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/UEditorUtil.java
+END
+SecurityUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/SecurityUtil.java
+END
+MySQLServerDialect.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/MySQLServerDialect.java
+END
+DbUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/DbUtil.java
+END
+ClobUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/ClobUtil.java
+END
+FileUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/FileUtil.java
+END
+FastjsonFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/FastjsonFilter.java
+END
+Oracle10gDialect.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/Oracle10gDialect.java
+END
+DecryptDruid.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/DecryptDruid.java
+END
+File404Filter.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/File404Filter.java
+END
+BigdecimalUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/BigdecimalUtil.java
+END
+StringUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/StringUtil.java
+END
+SendSimplEmail.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/SendSimplEmail.java
+END
+DateUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/DateUtil.java
+END
+SmsBase.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/SmsBase.java
+END
+SendEmailJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/SendEmailJob.java
+END
+Send.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/Send.java
+END
+OnlineListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/OnlineListener.java
+END
+FileToBase64.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/FileToBase64.java
+END
+UploadServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/UploadServlet.java
+END
+BeanUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/BeanUtils.java
+END
+MD5Util.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/MD5Util.java
+END
+SendMail.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/SendMail.java
+END
+HqlFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/HqlFilter.java
+END
+UtilTool.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/UtilTool.java
+END
+HighchartsUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/HighchartsUtil.java
+END
+RSAKeysUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/RSAKeysUtil.java
+END
+read.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/read.java
+END
+TicketTaoDa.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/TicketTaoDa.java
+END

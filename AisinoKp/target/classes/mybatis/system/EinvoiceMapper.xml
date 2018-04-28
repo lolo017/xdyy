@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EinvoiceMapper">
+	
+	<!-- ================================================================================================== -->
+	
+	
+	
+	
+	<!-- 保存签章后的发票数据 -->
+	<insert id="saveE" parameterType="pd">
+		insert into "T_EINVOICE_DATA" (
+			"ID",
+			"INVOICE_CODE",
+			"INVOICE_NUMBER",
+			"SALER_TAXCODE",
+			"BUYER_TAXCODE",
+			"INVOICE_DATE",
+			"PDFDATA",
+			"AMOUNT",
+			"TAX_AMOUNT",
+			"TOTAL"
+		) values (
+			seq_einvoice_data.nextval,
+			#{INVOICE_CODE},
+			#{INVOICE_NUMBER},
+			#{SALER_TAXCODE},
+			#{BUYER_TAXCODE},
+			<if test="KPRQ !=null and KPRQ != ''">
+			to_date(#{KPRQ},'YYYY-MM-DD:HH24:MI:SS'),
+		    </if>
+		    <if test="KPRQ ==null or KPRQ == ''">
+			sysdate,
+		    </if>
+			
+			#{PDFDATA,jdbcType=CLOB},
+			#{AMOUNT},
+			#{TAX_AMOUNT},
+			#{TOTAL}
+		)
+		
+	</insert>
+	
+	<!-- 通过税号获取我开的发票 -->
+	<select id="findSaleObj" parameterType="pd" resultType="pd">
+		select 
+			"ID",
+			"INVOICE_CODE",
+			"INVOICE_NUMBER",
+			"SALER_TAXCODE",
+			"BUYER_TAXCODE",
+			"INVOICE_DATE",
+			"AMOUNT",
+			"TAX_AMOUNT"
+		from 
+			"T_EINVOICE_DATA"
+		where 1=1
+		<if test="TAXCODE !=null and TAXCODE != ''">
+			and "SALER_TAXCODE" = #{TAXCODE}
+		</if>
+		<if test="INVOICE_CODE !=null and INVOICE_CODE != ''">
+			and "INVOICE_CODE" = #{INVOICE_CODE}
+		</if>
+		<if test="INVOICE_NUMBER !=null and INVOICE_NUMBER != ''">
+			and "INVOICE_NUMBER" = #{INVOICE_NUMBER}
+		</if>
+		<if test="SDATE !=null and SDATE != ''">
+			and "INVOICE_DATE" &gt;= to_date(#{SDATE},'yyyy-MM-dd hh24:mi:ss')
+		</if>
+		<if test="EDATE !=null and EDATE != ''">
+			and "INVOICE_DATE" &lt; to_date(#{EDATE},'yyyy-MM-dd hh24:mi:ss')+1
+		</if>
+		
+	</select>
+	
+	<!-- 通过税号获取开给我的发票 -->
+	<select id="findBuyObj" parameterType="pd" resultType="pd">
+		select 
+			"ID",
+			"INVOICE_CODE",
+			"INVOICE_NUMBER",
+			"SALER_TAXCODE",
+			"BUYER_TAXCODE",
+			"INVOICE_DATE",
+			"AMOUNT",
+			"TAX_AMOUNT"
+		from 
+			"T_EINVOICE_DATA"
+		where 1=1
+		<if test="TAXCODE !=null and TAXCODE != ''">
+			and ("BUYER_TAXCODE" = #{TAXCODE} or "BUYER_TAXCODE"=(select c.is_repeat_tax_code from cus_org_customer@crm c where c.org_id &lt;&gt; 349 and c.is_valid=1 and c.cust_tax_code=#{TAXCODE}))
+		</if>
+		<if test="INVOICE_CODE !=null and INVOICE_CODE != ''">
+			and "INVOICE_CODE" = #{INVOICE_CODE}
+		</if>
+		<if test="INVOICE_NUMBER !=null and INVOICE_NUMBER != ''">
+			and "INVOICE_NUMBER" = #{INVOICE_NUMBER}
+		</if>
+		<if test="SDATE !=null and SDATE != ''">
+			and "INVOICE_DATE" &gt;= to_date(#{SDATE},'yyyy-MM-dd')
+		</if>
+		<if test="EDATE !=null and EDATE != ''">
+			and "INVOICE_DATE" &lt; to_date(#{EDATE},'yyyy-MM-dd')+1
+		</if>
+		
+	</select>
+	
+	<!-- 查找发票pdf数据 -->
+	<select id="findPdfData" resultType="pd">
+		select "PDFDATA" from "T_EINVOICE_DATA"
+		where 1=1
+		<if test="ID !=null and ID != ''">
+			and "ID" = #{ID}
+		</if>
+	</select>
+	
+	<!-- 获取开票流水号 -->
+	<select id="findPrintSeq" resultType="pd">
+		select seq_einvoice_print.nextval seq from dual
+	</select>
+	
+	<insert id="insertCwsh" parameterType="pd">
+		insert into T_CWSHFS values(
+			SEQ_EINVOICE_CWSHFS.nextval,
+			#{SQR},
+			#{KJHZFPLY},
+			#{GSMC},
+			#{GSSH},
+			#{FPDM},
+			#{ZSFPHM},
+			#{ZSFPKJSJ},
+			#{ZSFPDDH},
+			#{SPMC},
+			#{SPSL},
+			#{HSJE},
+			#{SL},
+			#{BHSJE},
+			#{SE},
+			#{CWSH}
+		)
+	</insert>
+	
+	<!-- 下载发票，修改发票状态 -->
+	<update id="downPdf" parameterType="pd">
+		update "T_EINVOICE_DATA" set "IS_DOWNLOAD"=1 where "ID" = #{ID}
+		
+	</update>
+	
+</mapper>

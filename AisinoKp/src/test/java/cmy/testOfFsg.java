@@ -1,0 +1,130 @@
+package cmy;
+
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import aisino.reportform.model.easyui.Json;
+import aisino.reportform.model.fpmng.OrderDataZ;
+import aisino.reportform.service.fpmng.fsg.FsgServiceI;
+import aisino.reportform.util.base.ConfigUtil;
+import aisino.reportform.util.base.gy.ERPSignUtil;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:spring.xml", "classpath:spring-hibernate.xml"})
+public class testOfFsg {
+
+	private static final Logger logger = Logger.getLogger(testOfFsg.class);
+
+	@Autowired
+	public FsgServiceI fsgservice;	//饭烧光
+	
+	@Test
+	public void orderAction_saveGyResponseMsg() {	//获取单据列表
+		String start_time = "2018-01-23 00:00:00";
+		String end_time = "2018-01-24 00:00:00";
+		int page_no = 1;
+		String shop_code = "1";
+		String method = "gy.erp.trade.deliverys.get";
+		Json json=new Json();
+		
+		try {
+			List<OrderDataZ> list = new ArrayList<>();
+			String deliverys = "";
+			do {
+				//调用管易接口
+				String result_s = ERPSignUtil.getResponseMsg(method, start_time, end_time, page_no++, shop_code, null);
+				System.out.println(result_s);
+				JSONObject rs_object=JSON.parseObject(result_s);
+				String suc_flag = rs_object.get("success").toString();
+				if ("true".equals(suc_flag)) {
+//					int page_size = Integer.parseInt(ConfigUtil.get("page_size"));
+//					int page_total = (int) object.get("total") - page_size;
+					List<OrderDataZ> list_tmp = fsgservice.getGyResponseMsg(rs_object);
+					//保存
+					list.addAll(list_tmp);
+					
+					deliverys = rs_object.get("deliverys").toString();
+					
+				} else {
+					//System.out.println(object.get("errorDesc"));
+					json.setMsg(rs_object.get("errorDesc").toString());
+				}
+			} while (!"[]".equals(deliverys));
+
+			if (list.size() > 0) {
+				//odservice.saveList(list);
+				json.setMsg("获取"+list.size()+"行商品!");
+				json.setSuccess(true);
+			} else {
+				json.setMsg("无新数据!");
+			}
+		} catch (Exception e) {
+			e.getStackTrace();
+			json.setMsg(e.getMessage());
+		} finally {
+			//writeJson(json);
+		}
+	}
+	
+	@Test
+	public void orderAction_doNotNeedSecurity_getGyShopcombobox() {	//获取店铺
+		String start_time = null;
+		String end_time = null;
+		int pageno_no = 1;
+		String shop_code = null;
+		String method = "gy.erp.shop.get";
+		Json json=new Json();
+		
+		try {
+			//调用管易接口
+			String result_s = ERPSignUtil.getResponseMsg(method, start_time, end_time, pageno_no, shop_code, null);
+			System.out.println(result_s);
+			//保存
+			List<HashMap> list = fsgservice.getGyShops(result_s);
+			
+		} catch (Exception e) {
+			e.getStackTrace();
+			json.setMsg(e.getMessage());
+		} finally {
+			//writeJson(json);
+		}
+	}
+	
+	@Test
+	public void fsgService_getZpPrice() {	//获取赠品价格
+		int pageno_no = 1;
+		String item_code = "6923807806368";
+		String price = fsgservice.getZpPrice(item_code);
+	}
+	
+	@Test 
+	public void test_Str2Date() {
+//		String start_time = "2018-01-01";
+//		Date dat = new Date(start_time);
+		try {
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟  
+			String dstr="2008-4-24";  
+			Date date=sdf.parse(dstr);
+			System.out.println(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+		
+	}
+}

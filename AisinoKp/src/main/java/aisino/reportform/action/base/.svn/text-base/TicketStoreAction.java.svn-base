@@ -1,0 +1,1679 @@
+package aisino.reportform.action.base;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
+
+import aisino.reportform.action.BaseAction;
+import aisino.reportform.model.base.InvoiceHead;
+import aisino.reportform.model.base.InvoiceLine;
+import aisino.reportform.model.base.SessionInfo;
+import aisino.reportform.model.base.Sykhxx;
+import aisino.reportform.model.base.Syticket;
+import aisino.reportform.model.base.Syzfqk;
+import aisino.reportform.model.base.TicketType;
+import aisino.reportform.model.easyui.Grid;
+import aisino.reportform.model.easyui.Json;
+import aisino.reportform.service.base.TicketFillInvoiceMXServiceI;
+import aisino.reportform.service.base.TicketFillInvoiceServiceI;
+import aisino.reportform.service.base.TicketKHXXServiceI;
+import aisino.reportform.service.base.TicketTypeServiceI;
+import aisino.reportform.service.base.TicketStoreServiceI;
+import aisino.reportform.service.base.TicketZfqkServiceI;
+import aisino.reportform.service.base.InvoiceHeadServiceI;
+import aisino.reportform.service.base.InvoiceLineServiceI;
+import aisino.reportform.util.base.ConfigUtil;
+import aisino.reportform.util.base.UtilTool;
+
+@Namespace("/base")
+@Action
+public class TicketStoreAction extends BaseAction<Syticket> {
+	private String status;
+	private String fphm;
+	private String fpdm;
+	private String fphm1;
+	private String fphm2;
+	private String fpid;
+	private String gfsh;
+	private String gfmc;
+	private String gfdzdh;
+	private String savecusinfo;
+	private String sz;
+	private String pmmc;
+	private String kssl;
+	private String xssr;
+	private String slv;
+	private String ssq;
+	private String kce;
+	private String sjje;
+	private String dxje;
+	private String bz;
+	private String lyr;
+	private String invoice_name;
+	private String invoice_status;
+	private String zfqk;
+	private String cust_name;
+	private Long head_id;
+	private Long line_id;
+	private String type_id;
+	private String org_id;
+	private Long amount;
+	private Double sum;
+	private String sdate;
+	private String edate;
+	private Long type;
+	private InvoiceHead invoiceHead;
+	private TicketType ticketType;
+	private List<InvoiceLine> invoicelist;
+
+
+
+	@Autowired
+	private TicketFillInvoiceServiceI ticketFillInvoiceService;
+	
+	@Autowired
+	private TicketFillInvoiceMXServiceI ticketFillInvoiceMXService;
+	
+	@Autowired
+	private TicketKHXXServiceI ticketKHXXService;
+	
+	@Autowired
+	private TicketZfqkServiceI ticketZfqkService;
+
+	@Autowired
+	public void setService(TicketStoreServiceI service) {
+		this.service = service;
+	}
+	@Autowired
+	public InvoiceHeadServiceI  invoiceHeadService;
+	@Autowired
+	public InvoiceLineServiceI  invoiceLineService;
+	@Autowired
+	public TicketTypeServiceI ticketTypeService;
+	
+	final TimeZone zone = TimeZone.getTimeZone("GMT+8"); // 获取中国时区
+	
+	//查询发票库中的未领用的空发票
+	public void doNotNeedSessionAndSecurity_grid() {
+		Grid grid = new Grid();
+		String sql = "select id,type_id,name,fpdm,lpad(fphm,8,'0') fphm,count,lrrq,xgrq,status,(case when lyr is null then '0' else '1' end) lyr from T_TICKETSTORE where 1=1";
+		String sql_count = "select count(1) from t_ticketstore where 1=1";
+		if(status!=null)
+		{
+			sql+=" and status='"+status+"'";
+			sql_count+=" and status='"+status+"'";
+		}
+		else
+		{
+			sql+=" and status='0'";
+			sql_count+=" and status='0'";
+		}
+		
+		
+		if(fpdm!=null)
+		{
+			sql+=" and fpdm='"+fpdm+"'";
+			sql_count+=" and fpdm='"+fpdm+"'";
+		}
+		
+		if(fphm1 != null){
+			sql += " and to_number(fphm) >=" + Long.parseLong(fphm1);
+			sql_count+= " and to_number(fphm) >=" + Long.parseLong(fphm1);
+		}
+		if(fphm2 != null){
+			sql += " and to_number(fphm) <=" + Long.parseLong(fphm2);
+			sql_count+= " and to_number(fphm) <=" + Long.parseLong(fphm2);
+		}
+		
+		sql+=" order by to_number(fphm) asc";
+		
+		grid.setRows(service.findBySql(sql, page, rows));
+		grid.setTotal(service.countBySql(sql_count));
+		writeJson(grid);
+	}
+	
+	//查询未领用的发票
+	public void doNotNeedSessionAndSecurity_gridunlingyong() {
+		
+		Grid grid = new Grid();
+		String sql = "select id,name,fpdm,lpad(fphm,8,'0') fphm,count,lrrq,xgrq,status,(case when lyr is null then '0' else '1' end) lyr,lysj from T_TICKETSTORE where status='0'";
+		String sql_count = "select count(1) from t_ticketstore where status='0'";
+		SessionInfo sessionInfo = (SessionInfo) getSession().getAttribute(ConfigUtil.getSessionInfoName());
+		if(status!=null)
+		{
+			if(status.equals("0"))
+			{
+				sql+=" and lyr is null";
+				sql_count+=" and lyr is null";
+			}
+			else
+			{
+				if(lyr != null){
+					sql +=" and lyr = '" +  lyr + "'";
+					sql_count+=" and lyr ='" +  lyr + "'";
+				} else {
+					sql+=" and lyr ='" + sessionInfo.getUser().getId() + "'";
+					sql_count+=" and lyr ='" + sessionInfo.getUser().getId() + "'";
+				}
+			}
+		}
+		else
+		{
+			sql+=" and lyr is null";
+			sql_count+=" and lyr is null";
+		}
+		
+		if(fpdm != null){
+			sql+=" and FPDM ='" + fpdm + "'";
+			sql_count+=" and FPDM ='" + fpdm + "'";
+		}
+		
+		if(fphm1 != null){
+			sql +=" and to_number(FPHM) >= " +  Long.parseLong(fphm1);
+			sql_count+=" and to_number(FPHM) >= " +  Long.parseLong(fphm1);
+		}
+		
+		if(fphm2 != null){
+			sql +=" and to_number(FPHM) <= " +  Long.parseLong(fphm2);
+			sql_count+=" and to_number(FPHM) <= " +  Long.parseLong(fphm2);
+		}
+	
+		
+		sql +=" and org_id='" + sessionInfo.getOrg_id() + "'";
+		sql_count += " and org_id='" + sessionInfo.getOrg_id() + "'";
+		
+		sql+=" order by TO_NUMBER(fphm) asc";
+		
+		grid.setRows(service.findBySql(sql, page, rows));
+		grid.setTotal(service.countBySql(sql_count));
+		writeJson(grid);
+	}
+	
+	//查询非空的发票
+	public void doNotNeedSessionAndSecurity_gridused()
+	{
+		SessionInfo sessionInfo = (SessionInfo) getSession().getAttribute(ConfigUtil.getSessionInfoName());
+		Grid grid = new Grid();
+		String sql = "select t.id,t.name,lpad(t.fphm,8,'0') fphm, t.fpdm,xxfp.id header_id, nvl(xxfp.blue_reason,tz.zfqk) blue_reason,xxfp.blue_bill_id,xxfp.cust_code gfsh,xxfp.cust_name gfmc,t.count,xxfp.TOTAL_AMOUNT sjje,t.status,xxfp.ORDER_DATE kprq,u.name kpy "
+				+ "from T_INVOICE_HEAD xxfp,t_ticketstore t,syuser u,T_ZFQK tz"
+				+ " where xxfp.fp_id=t.id and u.id=xxfp.CREATER and xxfp.fp_id = tz.fpid(+)";
+		String sql_count = "select count(t.id) from T_INVOICE_HEAD xxfp,t_ticketstore t"
+				+ " where xxfp.fp_id=t.id";
+		if(status!=null)
+		{
+			if(status.equals("999"))
+			{
+				sql+=" and t.status in ('-1','9','0','1','2')";
+				sql_count+=" and t.status in ('-1','9','0','1','2')";
+			}
+			else
+			{
+				sql+=" and t.status='"+status+"'";
+				sql_count+=" and t.status='"+status+"'";
+			}
+		}
+		else
+		{
+			sql+=" and t.status in ('-1','1','9','2')";
+			sql_count+=" and t.status in ('-1','1','9','2')";
+		}
+		
+		if(fpdm!=null)
+		{
+			sql+=" and t.fpdm='"+fpdm+"'";
+			sql_count+=" and t.fpdm='"+fpdm+"'";
+		}
+		if(fphm1 != null){
+			sql+=" and to_number(t.fphm)>="+ Long.parseLong(fphm1);
+			sql_count+=" and to_number(t.fphm)>="+ Long.parseLong(fphm1);
+		}
+		
+		if(fphm2 != null){
+			sql+=" and to_number(t.fphm)<="+ Long.parseLong(fphm2);
+			sql_count+=" and to_number(t.fphm)<="+ Long.parseLong(fphm2);
+		}
+		
+		if(gfmc != null){
+			sql += " and (xxfp.cust_id='" + gfmc + "' or xxfp.CUST_NAME='" + gfmc + "')";
+			sql_count+=  " and (xxfp.cust_id='" + gfmc + "' or xxfp.CUST_NAME='" + gfmc + "')";
+			
+		}
+		
+		if (sdate != null){
+			sql += " and xxfp.ORDER_DATE >=to_date('"+sdate + "','yyyy-mm-dd')";
+			sql_count+= " and xxfp.ORDER_DATE >=to_date('"+sdate + "','yyyy-mm-dd')";
+		}
+		if (edate != null) {
+			sql += " and xxfp.ORDER_DATE <to_date('"+edate + "','yyyy-mm-dd')+1";
+			sql_count+= " and xxfp.ORDER_DATE <to_date('"+edate + "','yyyy-mm-dd')+1";
+		}
+		
+		if (!"6d9c1845-86d2-4ec2-ba4c-3b56049269c3".equals(sessionInfo.getUser().getId())){
+			sql += " and CREATER = '" + sessionInfo.getUser().getId() + "'";
+			sql_count+= " and CREATER = '" + sessionInfo.getUser().getId() + "'";
+		}
+		sql +=" and xxfp.org_id='" + sessionInfo.getOrg_id() + "'";
+		sql_count += " and xxfp.org_id='" + sessionInfo.getOrg_id() + "'";
+		sql+=" order by xxfp.id desc";
+		grid.setRows(service.findBySql(sql, page, rows));
+		grid.setTotal(service.countBySql(sql_count));
+		writeJson(grid);
+	}
+
+	//发票入库
+	public void doNotNeedSessionAndSecurity_save() throws Exception {
+		Json json = new Json();
+		TimeZone.setDefault(zone); // 设置时区
+		SessionInfo sessionInfo = (SessionInfo) getSession().getAttribute(ConfigUtil.getSessionInfoName());
+		String org_id = sessionInfo.getOrg_id();
+		if(data.getLyr() != null) {
+			if(data.getOrg_id() == null){
+				throw new Exception("发票领用人没有选择，请选择（请不要手动输入）！");
+			}
+		}
+		
+		try {
+				String fpdm=data.getFpdm();
+				if(fpdm == null || fphm1 == null || fphm2 == null){
+					throw new Exception("发票代码、发票号码段不全!");
+				}
+				//String fphm=data.getFphm();
+				if (fpdm.contains("-")){
+					throw new Exception("发票代码不 能批量增加！");
+				}
+				
+				if(fphm1.length() > 8 || fphm2.length() >8){
+					throw new Exception("发票号码位数错误，请检查！(位数应小于9位）");
+				}
+				 
+				if(fpdm.length()>13) {
+					throw new Exception("发票代码位数错误，请检查！(位数应小于13位)");
+				}
+				
+				int maxadd=Integer.parseInt(ConfigUtil.get("TICKET_MAXADDTICKETS"));
+				
+				if(amount!=null && amount > maxadd){
+					throw new Exception("发票数量超过设定的最大值（10000）");
+				}
+				
+				if (Long.parseLong(fphm2) - Long.parseLong(fphm1) <0) {
+					throw new Exception("发票的结束号码比开始号码小");
+				}
+				
+				Long bfphm = Long.parseLong(fphm2) - Long.parseLong(fphm1);
+				List<Syticket> listSyticket = new ArrayList<Syticket>();
+				//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mi:ss"); 
+				for(long i=0;i<=bfphm;i++)
+				{
+				   List<Map> list = service.findBySql("SELECT  SEQ_T_TICKETSTORE.NEXTVAL aaa FROM dual ");
+					
+				   Syticket iTicket=new Syticket();
+					iTicket.setName(data.getName());
+					iTicket.setType_id(data.getType_id());
+					iTicket.setFphm((Long.parseLong(fphm1) + i)+"");
+					iTicket.setFpdm(fpdm);
+					iTicket.setStatus("0");
+					iTicket.setCount(1);
+					if(data.getLyr() != null){
+						iTicket.setLyr(data.getLyr());
+						iTicket.setLysj(new Date());
+						iTicket.setOrg_id(data.getOrg_id());
+					} else {
+						iTicket.setOrg_id(org_id);
+					}
+					iTicket.setSort_id(Long.parseLong(list.get(0).get("AAA").toString()));
+					//
+					listSyticket.add(iTicket);
+			
+					//service.save(iTicket);
+				 }
+				service.saveList(listSyticket);
+				json.setMsg("新建成功！");
+				json.setSuccess(true);
+				
+				
+//				if(fphm.contains("-"))//批量添加
+//				{
+//					long fpdmstart=Long.parseLong(fpdm.split("-")[0]);//发票号码开始
+//					long fpdmend=Long.parseLong(fpdm.split("-")[1]);//发票号码终止
+					
+//					long fphmstart=Long.parseLong(fphm.split("-")[0]);//发票号码开始
+//					long fphmend=Long.parseLong(fphm.split("-")[1]);//发票号码终止
+					
+//					long bfpdm = fpdmend - fpdmstart;
+//					long bfphm = fphmend - fphmstart;
+//					if (bfpdm != bfphm){
+//						json.setMsg("发票代码与发票号码导入个数不一致，请检查！");
+//					}
+//					else
+//					if(fphm.split("-")[0].length()>8 || fphm.split("-")[1].length()>8)
+//					{
+//						json.setMsg("发票号码位数错误，请检查！");
+//					}
+//					else if(fphm.split("-")[0].length()>13 || fphm.split("-")[1].length()>13)
+//					{
+//						json.setMsg("发票代码位数错误，请检查！");
+//					}
+//					else if (fpdm.length()>13){
+//						json.setMsg("发票代码位数错误，请检查！(位数应小于13位)");
+//					}
+//					
+//					else if(fphm.split("-")[0].length()!=fphm.split("-")[1].length())
+//					{
+//						json.setMsg("发票号码起始号码与终止号码位数不一致，请检查！");
+//					}
+//					else if(fpdm.split("-")[0].length()!=fpdm.split("-")[1].length())
+//					{
+//						json.setMsg("发票代码起始号码与终止号码位数不一致，请检查！");
+//					}
+//					else
+//					{
+//						int maxadd=Integer.parseInt(ConfigUtil.get("TICKET_MAXADDTICKETS"));
+//						if(fphmend-fphmstart>maxadd)
+//						{
+//							json.setMsg("数量过大！");
+//						}
+//						else if(fphmend-fphmstart<0)
+//						{
+//							json.setMsg("终止号码小于起始号码，请检查！");
+//						}
+//						else
+//						{
+//							for(long i=0;i<=bfphm;i++)
+//							{
+//							   List<Map> list = service.findBySql("SELECT  SEQ_T_TICKETSTORE.NEXTVAL aaa FROM dual ");
+//								Syticket iTicket=new Syticket();
+//								iTicket.setName(data.getName());
+//								iTicket.setType_id(data.getType_id());
+//								iTicket.setFphm((fphmstart + i)+"");
+//								iTicket.setFpdm(fpdm);
+//								iTicket.setStatus("0");
+//								iTicket.setCount(1);
+//								if(data.getLyr() != null){
+//									iTicket.setLyr(data.getLyr());
+//									iTicket.setLysj(new Date());
+//									iTicket.setOrg_id(data.getOrg_id());
+//								} else {
+//									iTicket.setOrg_id(org_id);
+//								}
+//								iTicket.setSort_id(Long.parseLong(list.get(0).get("AAA").toString()));
+//								//
+//						
+//								service.save(iTicket);
+//							}
+//							json.setMsg("新建成功！");
+//							json.setSuccess(true);
+//						}
+//					}
+//				}
+//				else
+//				{
+//					if(fphm.length()>8)
+//					{
+//						json.setMsg("发票号码位数错误，请检查！");
+//					}
+//					else if(fpdm.length()>13)
+//					{
+//						json.setMsg("发票代码位数错误，请检查！");
+//					}
+//					else
+//					{
+//						data.setCount(1);
+//						//data.setOrg_id(org_id);
+//						if(data.getLyr() != null){
+//							data.setLysj(new Date());
+//						}
+//						data.setStatus("0");
+//						service.save(data);
+//						json.setMsg("新建成功！");
+//						json.setSuccess(true);
+//					}
+//				}
+//			} else {
+//				System.out.println("data is null");
+//				json.setMsg("data is null！");
+//			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.toString());
+			json.setMsg("输入数据错误，请检查" +e.getMessage());
+		}
+		writeJson(json);
+	}
+
+	//删除空发票
+	public void doNotNeedSessionAndSecurity_delete() {
+		Json json=new Json();
+		TimeZone.setDefault(zone); // 设置时区
+		Syticket syticket=service.getById(id);
+		if(syticket!=null)
+		{
+			if(syticket.getStatus().equals("0"))
+			{
+				if(syticket.getLyr()!=null)
+				{
+					json.setMsg("该发票已经被领用，删除失败！");
+				} else {
+					service.delete(syticket);
+					json.setSuccess(true);
+					json.setMsg("删除成功！");
+				}
+
+			}
+			else
+			{
+				json.setMsg("删除失败，发票已经使用！");
+			}
+		}
+		else
+			json.setMsg("删除失败，请确认！");
+		writeJson(json);
+	}
+	
+	//获取指定发票的详细信息
+	public void doNotNeedSessionAndSecurity_getInvoiceDetailbyId()
+	{
+		String q = getRequest().getParameter("fpid");
+		/**String sql="select t.name,t.fpdm,lpad(t.fphm,8,'0') fphm,t.status,x.gfmc,x.gfsh, x.gfdzdh,"
+				+ "m.sz, m.pmmc,m.xssr,m.slv || '%' slv,m.ssq,'￥' || round(m.sjje, 2) sjje,m.dxje,"
+				+ "to_char(x.kprq, 'yyyy') kprqyear,to_number(to_char(x.kprq, 'mm')) kprqmonth,to_number(to_char(x.kprq, 'dd')) kprqday,"
+				+ "m.bz,u.name kpy "
+				+ "from t_ticketstore t,t_xxfpmx m, t_xxfp x, syuser u "
+				+ "where x.kpy = u.id and m.fpid=t.id and t.id = x.fpid and t.id='"+q+"'";
+				*/
+		String sql="select t.name,t.fpdm,lpad(t.fphm,8,'0') fphm,t.status,x.cust_name gfmc,x.cust_code gfsh, x.addr gfdzdh,x.TOTAL_AMOUNT sjje,"
+	
+				+ "to_char(x.ORDER_DATE, 'yyyy') kprqyear,to_number(to_char(x.ORDER_DATE, 'mm')) kprqmonth,to_number(to_char(x.ORDER_DATE, 'dd')) kprqday,"
+				+ "u.name kpy "
+				+ "from t_ticketstore t,T_INVOICE_HEAD x, syuser u "
+				+ "where x.CREATER = u.id and t.id = x.fp_id and t.id='"+q+"'";
+		
+		List<Map> tList=service.findBySql(sql);
+		if(tList.size()>0)
+		{
+			writeJson(tList.get(0));
+		}
+		else
+		{
+			Json j = new Json();
+			j.setMsg("发票库中没有查询到相关的发票数据！");
+			writeJson(j);
+		}
+	}
+	
+	//获取一张可用发票
+	public void doNotNeedSessionAndSecurity_getFirstInvoiceNumber() {
+		String q=getRequest().getParameter("type_id").toString();
+		SessionInfo sessionInfo = (SessionInfo) getSession().getAttribute(ConfigUtil.getSessionInfoName());
+		String sql = "select * from (select * from T_TICKETSTORE t where status='0' order by to_number(fphm) ASC) where lyr='"
+		+ sessionInfo.getUser().getId() + "' and type_id='"+q+"' and org_id = '"+ sessionInfo.getOrg_id()+ "'  and rownum=1";
+
+		List<Map> tList=service.findBySql(sql);
+		if(tList.size()>0)
+		{
+			writeJson(tList.get(0));
+		}
+		else
+		{
+			Json j = new Json();
+			j.setMsg("发票库中没有发票数据，无法开票！");
+			writeJson(j);
+		}
+	}
+	
+	//开发票
+	public void doNotNeedSessionAndSecurity_saveInvoice() throws Exception {
+		Json j = new Json();
+		TimeZone.setDefault(zone); // 设置时区
+		SessionInfo sessionInfo = (SessionInfo) getSession().getAttribute(ConfigUtil.getSessionInfoName());
+		String name= sessionInfo.getUser().getName();
+		String creater = sessionInfo.getUser().getId();
+		String org_id = sessionInfo.getOrg_id();
+		Double d =0D;
+		Double dd = 0D;
+		
+		if(invoicelist.size() >0){
+			for(int k=0;k<invoicelist.size();k++){
+				if(invoicelist.get(k) != null){
+				  d = d + invoicelist.get(k).getQuantity()* invoicelist.get(k).getUnit_price();
+					dd= dd+invoicelist.get(k).getAmount();
+				}
+				invoiceHead.setTotal_amount(d);
+			}
+		}
+		
+		if(sum.compareTo(dd)==0){
+			
+		} else {
+			throw new Exception("明细金额与总金额不一致。");
+		}
+		//验证发票是否使用过了，已经使用过了就不允许保存了
+		
+		String sqle="select * from T_TICKETSTORE where STATUS <> '0' and id = '" + invoiceHead.getFp_id()+"'";
+		List<Map> liste  =  service.findBySql(sqle);
+		if(liste != null && liste.size() >0) {
+			j.setMsg("保存失败，发票已经被使用过了！");
+			writeJson(j);
+		} else {
+		//处理新增客户档案事件
+		if(savecusinfo!=null)
+		{
+			if(savecusinfo.equals("on"))
+			{
+				String sql = "select 1 from T_KHXX tk where tk.id='" + invoiceHead.getCust_id()+"'";
+				List<Map> list = service.findBySql(sql);
+					if (list != null && list.size() >0){
+						
+					  String sqlU= " update T_KHXX set NAME='"+invoiceHead.getCust_name()+"'," +
+					             "TAXCODE='" + tryToString(invoiceHead.getCust_code())+"',DZDH='"+tryToString(invoiceHead.getAddr()) + "'," +
+							     " TELPHONE='" +tryToString(invoiceHead.getTelphone()) + "',MOBILE='"+tryToString(invoiceHead.getMobile())+"',UPDATE_DATE=sysdate where id= '"+
+							     invoiceHead.getCust_id() + "'";
+					try {
+					  ticketKHXXService.executeSql(sqlU);
+					} catch (Exception e) {
+					}
+					} else {
+					
+						Sykhxx sykhxx=new Sykhxx();
+						sykhxx.setName(invoiceHead.getCust_name());
+						sykhxx.setTaxcode(invoiceHead.getCust_code());
+						sykhxx.setDzdh(invoiceHead.getAddr());
+						sykhxx.setMobile(invoiceHead.getMobile());
+						sykhxx.setTelphone(invoiceHead.getTelphone());
+						sykhxx.setOrg_id(org_id);
+						sykhxx.setCreate_date(new Date());
+						sykhxx.setCreater_id(sessionInfo.getUser().getId());
+						try {
+							ticketKHXXService.save(sykhxx);//保存客户信息
+						} catch (Exception e) {
+							// TODO: handle exception
+						}		
+				}	
+			}
+		}
+		
+		//开始新增发票开具信息表
+		try {
+		
+			
+			//处理主表信息
+			if (invoiceHead.getId()==null){
+				String sql = "SELECT seq_t_invoice_head.nextval aaa FROM dual";
+				List<Map> list  = service.findBySql(sql);
+				if(list!=null && list.size() >0){
+					head_id = Long.parseLong(list.get(0).get("AAA").toString());
+				}
+				invoiceHead.setId(head_id);
+				invoiceHead.setOrder_date(new Date());
+				invoiceHead.setOrg_id(org_id);
+				invoiceHead.setCreater(creater);
+				invoiceHead.setCreate_date(new Date());
+				invoiceHeadService.save(invoiceHead);
+			} else {
+				head_id = invoiceHead.getId();
+				invoiceHead.setUpdate_date(new Date());
+				invoiceHead.setUpdate_by(creater);
+				invoiceHeadService.update(invoiceHead);
+			}
+			
+			//处理明细记录表
+			 if (invoicelist.size() >0){
+				 for (int i=0;i<invoicelist.size();i++){
+					 if (invoicelist.get(i) != null) {
+					 if(invoicelist.get(i).getLine_id() == null){
+						 String sql1 = "SELECT seq_t_invoice_line.nextval aaa FROM dual";
+							List<Map> list1  = service.findBySql(sql1);
+							if(list1!=null && list1.size() >0){
+								line_id = Long.parseLong(list1.get(0).get("AAA").toString());
+								invoicelist.get(i).setId(head_id);
+								invoicelist.get(i).setLine_id(line_id);
+								invoiceLineService.save(invoicelist.get(i));
+							}
+					 } else {
+						 invoiceLineService.update(invoicelist.get(i));
+					 }
+				  }
+				 }
+			 }
+			
+			//处理发票情况
+			Syticket syticket=service.getById(invoiceHead.getFp_id());
+			if(sum > 0){
+			syticket.setStatus("1");}
+			else {
+				syticket.setStatus("2");
+			}
+			service.update(syticket);
+			Map m= new HashMap();
+			m.put("id", head_id);
+			j.setSuccess(true);
+			j.setMsg("保存成功！");
+			j.setObj(m);
+		} catch (Exception e) {
+			j.setMsg("保存失败："+e.getMessage());
+		}
+		writeJson(j);
+		}
+		
+	}
+	
+	//作废发票
+	public void doNotNeedSessionAndSecurity_disableInvoice()
+	{
+		Json j = new Json();
+		Syticket syticket=service.getById(id);
+		if(syticket.getStatus().equals("-1"))
+		{
+			j.setMsg("该发票已经作废，操作失败");
+		}
+		else if(syticket.getStatus().equals("0"))
+		{
+			j.setMsg("该发票尚未开具，操作失败！");
+		}
+		else if(syticket.getStatus().equals("1"))
+		{
+			j.setMsg("请先打印作废情况表！");
+		}
+		else
+		{
+			syticket.setStatus("-1");
+			service.update(syticket);
+			j.setSuccess(true);
+			j.setMsg("发票作废成功！");
+		}
+		writeJson(j);
+	}
+	
+	//更改发票状态：1->9，更改为可作废的状态
+	public void doNotNeedSessionAndSecurity_changeInvoice()
+	{
+		TimeZone.setDefault(zone); // 设置时区
+		String q = getRequest().getParameter("changestatus");
+		Json j = new Json();
+		Syticket syticket=service.getById(id);
+		if(syticket.getStatus().equals("0"))
+		{
+			j.setMsg("该发票尚未开具，操作失败！");
+		}
+		else if(syticket.getStatus().equals("1"))
+		{
+			syticket.setStatus(q);
+			service.update(syticket);
+			j.setSuccess(true);
+			j.setMsg("发票状态已更改<br />请在“报表统计”中打印作废情况表！");
+		}
+		else
+		{
+			j.setSuccess(true);
+			j.setMsg("请在“报表统计”中打印作废情况表！");
+		}
+		writeJson(j);
+	}
+	
+	  public static String tryToString(Object o){
+		  if (o == null){
+			  return "";
+		  } else if(o=="null"){
+			  return "";
+		  } else if("null".equals(o)){
+			  return "";
+		  }
+		  else {
+			  return o.toString();
+		  }
+	  }
+
+	  public static Double tryToDouble(Object o){
+		  if(o==null){
+			  return 0D;
+		  } else {
+			  return Double.parseDouble(o.toString());
+		  }
+	  }
+	//打印发票
+	public void doNotNeedSessionAndSecurity_PrintFP()
+	{
+		String q = getRequest().getParameter("fpid");
+		Double tamount = 0D;
+		String sql="select t.name,lpad(t.fphm,8,'0') fphm,t.status,x.cust_name gfmc,x.cust_code gfsh, nvl(x.blue_reason,tz.zfqk) blue_reason, x.addr gfdzdh,x.Fp_id,"
+				+ "m.TAX_TYPE sz, m.PRODUCT_NAME pmmc,m.UNIT_PRICE xssr,m.TAX_RATE slv,'0' ssq,0 sjje, '0' dxje,"
+				+ "to_char(x.order_date, 'yyyy') kprqyear,to_number(to_char(x.order_date, 'mm')) kprqmonth,to_number(to_char(x.order_date, 'dd')) kprqday,"
+				+ "'无'  bz,u.name kpy "
+				+ "from t_ticketstore t,t_invoice_line m, t_invoice_head x, syuser u,T_ZFQK tz "
+				+ "where x.CREATER = u.id and x.fp_id=t.id  and x.fp_id = tz.fpid(+)  and m.id = x.id and t.id='"+q+"'";
+		
+		String sqlA = " select ti.*,to_char(ti.order_date,'yyyy-mm-dd') order_date1,u.name skr ,nvl(ti.blue_reason,tz.zfqk) blue_reason1 from T_INVOICE_HEAD ti, syuser u,T_ZFQK tz where ti.CREATER = u.id and ti.fp_id = tz.fpid(+)  and  ti.id="+q;
+		String sqlB = " select * from T_INVOICE_line tl where tl.id="+q;
+		DecimalFormat df = new DecimalFormat("######0.00");   
+		//List<Map> tList=service.findBySql(sql);
+		List<Map> aList = service.findBySql(sqlA);
+		List<Map> bList = service.findBySql(sqlB);
+		ByteArrayOutputStream ba = new ByteArrayOutputStream();
+		PdfReader reader;
+		try {
+			reader = new PdfReader(ServletActionContext.getServletContext().getRealPath("TEMPLATEA.pdf"));
+			//reader = new PdfReader(ServletActionContext.getServletContext().getRealPath("modelA.pdf"));
+			PdfStamper stamp = new PdfStamper(reader, ba); 
+			PdfContentByte under = stamp.getUnderContent(1);
+			BaseFont bf = BaseFont.createFont("STSong-Light","UniGB-UCS2-H",BaseFont.NOT_EMBEDDED);
+			Font FontChinese = new Font(bf, 12, Font.NORMAL);
+			AcroFields form = stamp.getAcroFields();
+			
+			//初始化文字
+			form.setField("TB1","付款方名称：");
+			form.setField("TB02","项目");
+			form.setField("TB03","数量");
+			form.setField("TB04","计价单位");
+			form.setField("TB05","单价");
+			form.setField("TB06","金额");
+			//开票日期
+			form.setField("KPRQ",tryToString(aList.get(0).get("ORDER_DATE1")));
+			form.setField("FPHM",tryToString(aList.get(0).get("INVOICE_CODE")));
+			form.setField("DM","发票代码：" + tryToString(aList.get(0).get("INVOICE_TYPE")));
+			form.setField("HM","发票号码：" + tryToString(aList.get(0).get("INVOICE_CODE")));
+			form.setField("HYFL","机动车检测");
+			form.setField("GFMC",tryToString(aList.get(0).get("CUST_NAME")));
+			form.setField("GFSH",tryToString(aList.get(0).get("CUST_CODE")));
+
+			
+			//判定是否作废
+			String sqld = "select 1 from T_TICKETSTORE where STATUS = '-1' AND id='" + aList.get(0).get("FP_ID").toString() +"'";
+			List<Map> dList = service.findBySql(sqld);
+			if(dList != null && dList.size() >0){
+				form.setField("FLAG","【作废】");
+				form.setField("ZFYI","作废原因：" + tryToString(aList.get(0).get("BLUE_REASON1")));
+			}
+
+			for (int i=0;i<bList.size();i++){
+				tamount = tamount + tryToDouble(bList.get(i).get("QUANTITY")) * tryToDouble(bList.get(i).get("UNIT_PRICE"));
+				form.setField("XM"+i,tryToString(bList.get(i).get("PRODUCT_NAME")).replaceAll("&lt;", "<"));
+				form.setField("SL"+i,tryToString(bList.get(i).get("QUANTITY")));
+				form.setField("JLDW"+i,tryToString(bList.get(i).get("UNIT")));
+				form.setField("DJ"+i,tryToString(bList.get(i).get("UNIT_PRICE")));
+				form.setField("JE"+i,tryToString(bList.get(i).get("AMOUNT")));
+			}
+			form.setField("HJJEDX"," 合计    （金额大写）" + UtilTool.change(tamount));
+			String dd= df.format(tamount); 
+			form.setField("HJJE",dd);
+			if(tamount<0){
+			form.setField("ZFYI","红冲原因：" + tryToString(aList.get(0).get("BLUE_REASON1")));
+			}
+			
+			String sqlC= "select so.*,nvl(so.TELPHONE,so.MOBILE) tel from SYORGANIZATION so where so.id='" +tryToString(aList.get(0).get("ORG_ID")) +"'"; 
+			List<Map> cList = service.findBySql(sqlC);
+			
+			form.setField("SKFMC","收款方名称：" + tryToString(cList.get(0).get("NAME")));
+			form.setField("SKFSH","收款方识别号：" + tryToString(cList.get(0).get("TAX_CODE")));
+			form.setField("DZDH","收款方地址、电话：" + tryToString(cList.get(0).get("ADDRESS")) + " " + tryToString(cList.get(0).get("TEL")));
+			
+			form.setField("SKR","收款人：" + tryToString(aList.get(0).get("SKR")));
+			form.setField("LSH","流水号：" + tryToString(aList.get(0).get("ID")));
+			form.setField("JQBH","机器编号：1");
+			
+
+			//设置发票为已使用
+			//String sqlu = " update T_TICKETSTORE set STATUS = '1' where id='" + tryToString(aList.get(0).get("FP_ID")) + "'";
+			String sqlu2 = " update T_INVOICE_HEAD set STATUS = 1 where id=" + tryToString(aList.get(0).get("ID"));
+			//service.executeSql(sqlu);
+			service.executeSql(sqlu2);
+			
+//			form.setField("KPRQYEAR",tList.get(0).get("KPRQYEAR").toString());
+//		    form.setField("KPRQMONTH", tList.get(0).get("KPRQMONTH").toString());
+//		    form.setField("KPRQDAY", tList.get(0).get("KPRQDAY").toString());
+//		    form.setField("GFMC",tList.get(0).get("GFMC").toString());
+//		    form.setField("GFSH", tList.get(0).get("GFSH").toString());
+//		    form.setField("GFDZDH", tList.get(0).get("GFDZDH").toString());
+//		    form.setField("KPY", tList.get(0).get("KPY").toString());
+//		    form.setField("BZ", tList.get(0).get("BZ").toString());
+//		    form.setField("DXJE1", tList.get(0).get("DXJE").toString());
+//		    
+//		    form.setField("SZ1", tList.get(0).get("SZ").toString());
+//	    	form.setField("PMMC1", tList.get(0).get("PMMC").toString());
+//	    	form.setField("XSSR1", tList.get(0).get("XSSR").toString());
+//	    	form.setField("SLV1", tList.get(0).get("SLV").toString()+"%");
+//	    	form.setField("SSQ1", tList.get(0).get("SSQ").toString());
+//	    	form.setField("SJJE1","￥"+tList.get(0).get("SJJE").toString());
+	    	
+//		    for(int i=1;i<tList.size();i++)
+//		    {
+//		    	form.setField("SZ"+i, tList.get(0).get("SZ").toString());
+//		    	form.setField("PMMC"+i, tList.get(0).get("PMMC").toString());
+//		    	form.setField("XSSR"+i, tList.get(0).get("XSSR").toString());
+//		    	form.setField("SLV"+i, tList.get(0).get("SLV").toString());
+//		    	form.setField("SSQ"+i, tList.get(0).get("SSQ").toString());
+//		    	form.setField("SJJE"+i, tList.get(0).get("SJJE").toString());
+//		    }
+		    
+		    stamp.setFormFlattening(true); 
+		    stamp.close();
+		    HttpServletResponse response=ServletActionContext.getResponse();
+		    response.setContentType("application/pdf; charset=gb2312");
+		    response.setHeader("contentDisposition", "inline; filename=\"contract.pdf\"");
+		    response.setBufferSize(ba.size());
+		    ServletOutputStream out = response.getOutputStream();  
+	        ba.writeTo(out);
+	        out.flush();
+	        out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//保存作废情况描述
+	public void doNotNeedSessionAndSecurity_saveZfqk()
+	{
+		TimeZone.setDefault(zone); // 设置时区
+		Json j = new Json();
+		String fid=data.getId();
+		Syzfqk syzfqk=new Syzfqk();
+		syzfqk.setFpid(fid);
+		syzfqk.setZfqk(zfqk);
+		try {
+			ticketZfqkService.save(syzfqk);
+			Syticket syticket=service.getById(fid);
+			if(syticket!=null)
+			{
+				//直接作废，并提示打印作废情况表，流程精简
+//				syticket.setStatus("9");
+				syticket.setStatus("-1");
+				service.update(syticket);
+				j.setSuccess(true);
+				j.setMsg("发票状态已更改<br />请在“报表统计”中打印作废情况表！");
+			}
+			else
+			{
+				j.setMsg("未找到发票，操作失败！");
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			j.setMsg("操作失败！");
+		}
+		writeJson(j);
+	}
+	
+	//获取作废情况列表
+	public void doNotNeedSessionAndSecurity_gridZfqkList()
+	{
+		Grid grid=new Grid();
+		String sql = "select t.id,t.name,t.fpdm,lpad(t.fphm,8,'0') fphm,x.TOTAL_AMOUNT sjje,t.status,x.ORDER_DATE kprq "
+				+ "from t_ticketstore t, T_INVOICE_HEAD x "
+				+ "where t.id = x.fp_id and t.status in ('9','-1') ";
+		if(fphm!=null)
+		{
+			sql+=" and lpad(t.fphm,8,'0') like '%"+fphm+"%' ";
+		}
+		sql+= "order by x.ORDER_DATE desc";
+		String sql_count="select count(1) from t_ticketstore where status in ('9','-1')";
+		grid.setRows(service.findBySql(sql, page, rows));
+		grid.setTotal(service.countBySql(sql_count));
+		writeJson(grid);
+	}
+	
+	//根据发票ID获取发票作废原因
+	public void doNotNeedSessionAndSecurity_getZfqkDetailbyId()
+	{
+		String q = getRequest().getParameter("fpid");
+		String sql="select u.name kpy,t.name fpmc,t.fpdm,lpad(t.fphm,8,'0') fphm,x.kprq,z.zfqk "
+					+"from t_ticketstore t,t_xxfp x,t_zfqk z,syuser u "
+					+"where t.id=x.fpid and t.id=z.fpid and x.kpy=u.id and t.id='"+q+"'";
+		List<Map> tList=service.findBySql(sql);
+		if(tList.size()>0)
+		{
+			writeJson(tList.get(0));
+		}
+		else
+		{
+			Json j = new Json();
+			j.setMsg("发票库中没有查询到相关的发票数据！");
+			writeJson(j);
+		}
+	}
+	//发票勾选领用
+	public void doNotNeedSessionAndSecurity_lingyong()
+	{
+		TimeZone.setDefault(zone); // 设置时区
+		Json j = new Json();
+		if(id!=null) {
+			try {
+				SessionInfo sessionInfo = (SessionInfo) getSession().getAttribute(ConfigUtil.getSessionInfoName());
+				for(String item:id.split(",")) {
+					Syticket ticket=service.getById(item);
+					ticket.setLyr(sessionInfo.getUser().getId());
+					ticket.setLysj(new Date());
+					service.update(ticket);
+				}
+				j.setSuccess(true);
+				j.setMsg("发票已领用！<br>发票信息可以在已领用查询中看到");
+			}
+			catch (Exception e) {
+				j.setMsg("发票已领用失败！");
+			}
+		}
+		else {
+			j.setMsg("请选择发票！");
+		}
+		writeJson(j);
+	}
+	
+	//发票勾选取消领用
+	//发票勾选领用
+	public void doNotNeedSessionAndSecurity_notlingyong() throws Exception
+		{
+		    TimeZone.setDefault(zone); // 设置时区
+			Json j = new Json();
+			if(id!=null) {
+				try {
+					SessionInfo sessionInfo = (SessionInfo) getSession().getAttribute(ConfigUtil.getSessionInfoName());
+					for(String item:id.split(",")) {
+						Syticket ticket=service.getById(item);
+						String status = ticket.getStatus();
+						if(!"0".equals(status)) {
+							throw new Exception("票已经被使用了，不能取消分配了！");
+						}
+						ticket.setLyr(null);
+						ticket.setLysj(null);
+						service.update(ticket);
+					}
+					j.setSuccess(true);
+					j.setMsg("发票已取消领用！");
+				}
+				catch (Exception e) {
+					j.setMsg("发票取消领用失败！" + e.getMessage());
+				}
+			}
+			else {
+				j.setMsg("请选择发票！");
+			}
+			writeJson(j);
+		}
+	
+	//发票批量领用
+	public void doNotNeedSessionAndSecurity_mlingyong()
+	{
+		Json j = new Json();
+		TimeZone.setDefault(zone); // 设置时区
+    try {
+    	if (fpdm == null || fphm1 == null || fphm2 == null || lyr == null){
+    		throw new Exception("没有识别到发票代码或者发票号码段或者领用人");
+    	}
+		SessionInfo sessionInfo = (SessionInfo) getSession().getAttribute(ConfigUtil.getSessionInfoName());
+		String sql=" update T_TICKETSTORE set LYR= '" + lyr + "',LYSJ=sysdate,ORG_ID='" + org_id + "' where 1=1 ";
+		String sqlu = "select 1 from T_TICKETSTORE where status != '0' ";
+		String sqle = "select 1 from T_TICKETSTORE where status = '0' and lyr is null ";
+		if(fpdm != null){
+			sql+=" and FPDM ='" + fpdm + "'";
+			sqlu +=" and FPDM ='" + fpdm + "'";
+			sqle +=" and FPDM ='" + fpdm + "'";
+		}
+		
+		if(fphm1 != null){
+			sql +=" and to_number(FPHM) >= " +  Long.parseLong(fphm1);
+			sqlu +=" and to_number(FPHM) >= " +  Long.parseLong(fphm1);
+			sqle +=" and to_number(FPHM) >= " +  Long.parseLong(fphm1);
+		}
+		
+		if(fphm2 != null){
+			sql +=" and to_number(FPHM) <= " +  Long.parseLong(fphm2);
+			sqlu +=" and to_number(FPHM) <= " +  Long.parseLong(fphm2);
+			sqle +=" and to_number(FPHM) <= " +  Long.parseLong(fphm2);
+		}
+		
+		List list = service.findBySql(sqlu);
+		if(list != null && list.size() >0){
+			throw new Exception("待分配的发票已经使用了，请检查！");
+		}
+		List list2 = service.findBySql(sqle);
+		if(list2 != null && list2.size()==0){
+			throw new Exception("未找到符合条件的发票，请检查！");
+		}
+		//sql +=" and org_id='" + sessionInfo.getOrg_id() + "'";
+		//sql +=" and org_id='" + org_id + "'";
+		
+	
+				service.executeSql(sql);
+				j.setSuccess(true);
+				j.setMsg("发票已分配！<br>发票信息可以在已领用查询中看到");
+			}
+		catch (Exception e) {
+			    j.setMsg("发票分配失败！" + e.getMessage());
+		}
+		writeJson(j);
+	}
+	
+	//发票批量领用取消
+	
+	public void doNotNeedSessionAndSecurity_notmlingyong() throws Exception
+	{
+		Json j = new Json();
+		TimeZone.setDefault(zone); // 设置时区
+		try {
+			if (fpdm == null || fphm1 == null || fphm2 == null || lyr == null){
+	    		throw new Exception("没有识别到发票代码 或者 发票号码段 或者 领用人");
+	    	}
+		SessionInfo sessionInfo = (SessionInfo) getSession().getAttribute(ConfigUtil.getSessionInfoName());
+		String sqle = "select count(*) total from T_TICKETSTORE where status <> '0' ";
+		String sql=" update T_TICKETSTORE set LYR= null,LYSJ=null where 1=1 ";
+		String sqlu = "select 1 from T_TICKETSTORE where status = '0' ";
+		if(fpdm != null){
+			sql+=" and FPDM ='" + fpdm + "'";
+			sqle +=" and FPDM ='" + fpdm + "'";
+			sqlu +=" and FPDM ='" + fpdm + "'";
+		}
+		
+		if(fphm1 != null){
+			sql +=" and to_number(FPHM) >= " +  Long.parseLong(fphm1);
+			sqle +=" and to_number(FPHM) >= " +  Long.parseLong(fphm1);
+			sqlu +=" and to_number(FPHM) >= " +  Long.parseLong(fphm1);
+		}
+		
+		if(fphm2 != null){
+			sql +=" and to_number(FPHM) <= " +  Long.parseLong(fphm2);
+			sqle += " and to_number(FPHM) <= " +  Long.parseLong(fphm2);
+			sqlu += " and to_number(FPHM) <= " +  Long.parseLong(fphm2);
+		}
+		if(lyr != null){
+			sql += " and LYR='" + lyr + "'";
+			sqle +=" and LYR='" + lyr + "'";
+			sqlu += " and LYR='" + lyr + "'";
+		}
+		sql +=" and org_id='" + sessionInfo.getOrg_id() + "'";
+		sqle += " and org_id='" + sessionInfo.getOrg_id() + "'";
+		sqlu +=  " and LYR='" + lyr + "'";
+		
+		List<Map> list = service.findBySql(sqle);
+		if(Long.parseLong(list.get(0).get("TOTAL").toString()) >0){
+			throw new Exception("票已经被使用了，不能取消分配了！");
+		}
+		List list2 = service.findBySql(sqlu);
+		if(list2 != null && list2.size() == 0) {
+			throw new Exception("未找到符合条件的发票！");
+		}
+	  
+				service.executeSql(sql);
+				j.setSuccess(true);
+				j.setMsg("发票已取消领用！<br>发票信息可以在已领用查询中看到");
+			}
+		catch (Exception e) {
+			    j.setMsg("发票撤销分配失败！" + e.getMessage());
+		}
+		writeJson(j);
+	}
+	
+	public void doNotNeedSessionAndSecurity_getFpName()
+	{
+		String fpnameSql="select ID,NAME from T_TICKET_TYPE";
+		List<Map> tList=service.findBySql(fpnameSql);
+		if(tList.size()>0)
+		{
+			writeJson(tList);
+		}
+		else
+		{
+			Json j = new Json();
+			j.setMsg("发票库中没有查询到相关的发票数据！");
+			writeJson(j);
+		}
+	}
+	
+	public void doNotNeedSessionAndSecurity_givebackInvoice()
+	{
+		Json j = new Json();
+		TimeZone.setDefault(zone); // 设置时区
+		Syticket syticket=service.getById(id);
+		if(!syticket.getStatus().equals("0"))
+		{
+			j.setMsg("该税票已经被使用，退回失败！");
+		}
+		else
+		{
+			syticket.setLyr(null);
+			syticket.setLysj(null);
+			service.update(syticket);
+			j.setSuccess(true);
+			j.setMsg("税票退回成功！");
+		}
+		writeJson(j);
+	}
+
+	
+	//获取税票管理信息
+	public void doNotNeedSecurity_getOpenAllInfoById(){
+		
+		String sqlA = "select ti.*,to_char(ti.ORDER_DATE,'yyyy-mm-dd hh24:mi:ss') ORDER_DATE1,to_char(ti.CREATE_DATE,'yyyy-mm-dd hh24:mi:ss') CREATE_DATE1 from T_INVOICE_HEAD ti where ti.id=" + head_id;
+		List<Map> mList=service.findBySql(sqlA);
+		String sqlB ="";
+        if (type < 0 ){
+        	sqlB = " SELECT '' id,'' line_id,product_name, quantity ,unit,tax_rate,unit_price ,amount,product_id,tax_type ,specy_type FROM T_INVOICE_LINE tl" +
+                   " where tl.id=" + head_id;
+        } else {
+          sqlB =  "select * from T_INVOICE_LINE tl where tl.id=" + head_id;
+        }
+		List<Map> tList=service.findBySql(sqlB);
+		
+		Map obMap = new HashMap();
+		obMap.put("main", mList);
+		obMap.put("list", tList);
+		
+		writeJson(obMap);
+		
+	}
+
+	//删除行信息
+	
+	public void doNotNeedSecurity_deleteListById(){
+		Json json=new Json();
+		String sqlh = "SELECT 1"+
+				 " FROM T_INVOICE_HEAD H, T_INVOICE_LINE L, T_TICKETSTORE T "+
+				 " WHERE H.ID = L.ID "+
+				 "   AND T.ID = H.FP_ID "+
+				  "  AND T.STATUS != '0' " +
+				  "   AND L.LINE_ID = "+line_id;
+		List list = service.findBySql(sqlh);
+		if(list!= null && list.size() >0){
+			json.setMsg("删除行信息失败！发票已经被使用了!");
+		} else {
+			String sql = " delete from T_INVOICE_LINE tl where tl.line_id=" + line_id;
+			service.executeSql(sql);
+			json.setSuccess(true);
+			json.setMsg("删除行信息成功！");
+		}
+		writeJson(json);
+	}
+	
+
+	public void doNotNeedSecurity_TicketTypeSave(){
+		Json j=new Json();
+		TimeZone.setDefault(zone); // 设置时区
+		try{
+			if( type_id ==null || type_id== "null"){
+			    ticketType.setFlag(0L);
+			    ticketTypeService.save(ticketType);
+			} else {
+				ticketTypeService.update(ticketType);
+			}
+			
+			j.setSuccess(true);
+			j.setMsg("保存成功！");
+		} catch (Exception e) {
+			j.setMsg("保存失败！"+ e.getMessage());
+		}
+		writeJson(j);
+	}
+	
+	public void doNotNeedSecurity_GetEntitleByid(){
+		
+		//ticketType =ticketTypeService.getById(type_id);
+		String sql= "select * from t_ticket_Type where id='" + type_id + "'";
+		List<Map> list = service.findBySql(sql);
+		writeJson(list.get(0));
+		
+	}
+	
+	public void doNotNeedSecurity_SetFlagByID(){
+		String sql="update t_ticket_type set flag=1 where id='" + type_id + "'";
+		Json j=new Json();
+		try{
+			service.executeSql(sql);
+			j.setSuccess(true);
+			j.setMsg("失效成功！");
+		} catch (Exception e) {
+			j.setMsg("失效失败！"+ e.getMessage());
+		}
+		writeJson(j);
+		
+	}
+	
+	public void doNotNeedSecurity_SetStartFlagByID(){
+		String sql="update t_ticket_type set flag=0 where id='" + type_id + "'";
+		Json j=new Json();
+		try{
+			service.executeSql(sql);
+			j.setSuccess(true);
+			j.setMsg("启用成功！");
+		} catch (Exception e) {
+			j.setMsg("启用失败！"+ e.getMessage());
+		}
+		writeJson(j);
+		
+	}
+	
+	public void doNotNeedSecurity_getListALL(){
+		
+		
+		Grid grid = new Grid();
+		String sql = " select * from t_ticket_type where 1=1";
+		String sql_count = "select count(1) from t_ticket_type where 1=1";
+		if(invoice_status!=null &&  !"9".equals(invoice_status) )
+		{
+			sql+=" and flag="+invoice_status;
+			sql_count+=" and flag="+invoice_status;
+		}
+	
+		
+		
+		if(invoice_name!=null)
+		{
+			sql+=" and name='"+invoice_name+"'";
+			sql_count+=" and name='"+invoice_name+"'";
+		}
+		
+		
+		grid.setRows(service.findBySql(sql, page, rows));
+		grid.setTotal(service.countBySql(sql_count));
+		writeJson(grid);
+		
+	}
+	
+	public void doNotNeedSecurity_popTypeInfo(){
+		
+		   String q = getRequest().getParameter("q");
+			   if(q!=null){
+			     q = q.replace("'", "");
+	
+				String sql = "select tt.id,tt.code,tt.name from t_ticket_type tt where tt.flag=0  and tt.name like '%" + q  + "%'";
+				List list = service.findBySql(sql);
+			
+					writeJson(list);
+				
+			} else {
+				String sql = "select tt.id,tt.code,tt.name from t_ticket_type tt where tt.flag=0";
+				List list = service.findBySql(sql);
+
+					writeJson(list);
+			
+			}
+		   
+	}
+	
+	
+	public void doNotNeedSecurity_popUsrInfo(){
+		
+		   String q = getRequest().getParameter("q");
+			   if(q!=null){
+			     q = q.replace("'", "");
+	
+				String sql = "select tt.USRID,tt.name,tt.org_id,tt.org_name from SYS_USER tt where 1=1  and tt.name<>'系统管理员' and tt.name like '%" + q  + "%'";
+				List list = service.findBySql(sql);
+			
+					writeJson(list);
+				
+			} else {
+				String sql = "select tt.USRID,tt.name,tt.org_id,tt.org_name from SYS_USER tt where 1=1 and tt.name<>'系统管理员'";
+				List list = service.findBySql(sql);
+
+					writeJson(list);
+			
+			}
+		   
+	}
+	
+	public String getCust_name() {
+		return cust_name;
+	}
+
+	public void setCust_name(String cust_name) {
+		this.cust_name = cust_name;
+	}
+
+
+
+	public Long getLine_id() {
+		return line_id;
+	}
+
+	public void setLine_id(Long line_id) {
+		this.line_id = line_id;
+	}
+	
+	public String getZfqk() {
+		return zfqk;
+	}
+
+	public void setZfqk(String zfqk) {
+		this.zfqk = zfqk;
+	}
+
+	public String getBz() {
+		return bz;
+	}
+
+	public void setBz(String bz) {
+		this.bz = bz;
+	}
+
+	public String getSz() {
+		return sz;
+	}
+
+	public void setSz(String sz) {
+		this.sz = sz;
+	}
+
+	public String getPmmc() {
+		return pmmc;
+	}
+
+	public void setPmmc(String pmmc) {
+		this.pmmc = pmmc;
+	}
+
+	public String getXssr() {
+		return xssr;
+	}
+
+	public void setXssr(String xssr) {
+		this.xssr = xssr;
+	}
+
+	public String getDxje() {
+		return dxje;
+	}
+
+	public void setDxje(String dxje) {
+		this.dxje = dxje;
+	}
+
+	public String getSsq() {
+		return ssq;
+	}
+
+	public void setSsq(String ssq) {
+		this.ssq = ssq;
+	}
+
+	public String getKce() {
+		return kce;
+	}
+
+	public void setKce(String kce) {
+		this.kce = kce;
+	}
+
+	public String getKssl() {
+		return kssl;
+	}
+
+	public void setKssl(String kssl) {
+		this.kssl = kssl;
+	}
+
+	public String getSlv() {
+		return slv;
+	}
+
+	public void setSlv(String slv) {
+		this.slv = slv;
+	}
+
+	public String getSjje() {
+		return sjje;
+	}
+
+	public void setSjje(String sjje) {
+		this.sjje = sjje;
+	}
+
+	public String getSavecusinfo() {
+		return savecusinfo;
+	}
+
+	public void setSavecusinfo(String savecusinfo) {
+		this.savecusinfo = savecusinfo;
+	}
+
+	public String getFpid() {
+		return fpid;
+	}
+
+	public void setFpid(String fpid) {
+		this.fpid = fpid;
+	}
+
+	public String getGfsh() {
+		return gfsh;
+	}
+
+	public void setGfsh(String gfsh) {
+		this.gfsh = gfsh;
+	}
+
+	public String getGfmc() {
+		return gfmc;
+	}
+
+	public void setGfmc(String gfmc) {
+		this.gfmc = gfmc;
+	}
+
+	public String getGfdzdh() {
+		return gfdzdh;
+	}
+
+	public void setGfdzdh(String gfdzdh) {
+		this.gfdzdh = gfdzdh;
+	}
+
+	public String getFphm() {
+		return fphm;
+	}
+
+	public void setFphm(String fphm) {
+		this.fphm = fphm;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public InvoiceHeadServiceI getInvoiceHeadService() {
+		return invoiceHeadService;
+	}
+
+	public void setInvoiceHeadService(InvoiceHeadServiceI invoiceHeadService) {
+		this.invoiceHeadService = invoiceHeadService;
+	}
+
+	public InvoiceLineServiceI getInvoiceLineService() {
+		return invoiceLineService;
+	}
+
+	public void setInvoiceLineService(InvoiceLineServiceI invoiceLineService) {
+		this.invoiceLineService = invoiceLineService;
+	}
+
+	public Long getHead_id() {
+		return head_id;
+	}
+
+	public void setHead_id(Long head_id) {
+		this.head_id = head_id;
+	}
+
+	public InvoiceHead getInvoiceHead() {
+		return invoiceHead;
+	}
+
+	public void setInvoiceHead(InvoiceHead invoiceHead) {
+		this.invoiceHead = invoiceHead;
+	}
+
+	public List<InvoiceLine> getInvoicelist() {
+		return invoicelist;
+	}
+
+	public void setInvoicelist(List<InvoiceLine> invoicelist) {
+		this.invoicelist = invoicelist;
+	}
+
+	public TicketTypeServiceI getTicketTypeService() {
+		return ticketTypeService;
+	}
+
+	public void setTicketTypeService(TicketTypeServiceI ticketTypeService) {
+		this.ticketTypeService = ticketTypeService;
+	}
+
+	public TicketType getTicketType() {
+		return ticketType;
+	}
+
+	public void setTicketType(TicketType ticketType) {
+		this.ticketType = ticketType;
+	}
+
+	public String getType_id() {
+		return type_id;
+	}
+
+	public void setType_id(String type_id) {
+		this.type_id = type_id;
+	}
+
+	public String getInvoice_name() {
+		return invoice_name;
+	}
+
+	public void setInvoice_name(String invoice_name) {
+		this.invoice_name = invoice_name;
+	}
+
+	public String getInvoice_status() {
+		return invoice_status;
+	}
+
+	public void setInvoice_status(String invoice_status) {
+		this.invoice_status = invoice_status;
+	}
+
+	public String getFphm1() {
+		return fphm1;
+	}
+
+	public void setFphm1(String fphm1) {
+		this.fphm1 = fphm1;
+	}
+
+	public String getFphm2() {
+		return fphm2;
+	}
+
+	public void setFphm2(String fphm2) {
+		this.fphm2 = fphm2;
+	}
+
+	public String getFpdm() {
+		return fpdm;
+	}
+
+	public void setFpdm(String fpdm) {
+		this.fpdm = fpdm;
+	}
+
+	public String getLyr() {
+		return lyr;
+	}
+
+	public void setLyr(String lyr) {
+		this.lyr = lyr;
+	}
+
+	public String getOrg_id() {
+		return org_id;
+	}
+
+	public void setOrg_id(String org_id) {
+		this.org_id = org_id;
+	}
+
+	public Long getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Long amount) {
+		this.amount = amount;
+	}
+
+	public String getSdate() {
+		return sdate;
+	}
+
+	public void setSdate(String sdate) {
+		this.sdate = sdate;
+	}
+
+	public String getEdate() {
+		return edate;
+	}
+
+	public void setEdate(String edate) {
+		this.edate = edate;
+	}
+
+	public Double getSum() {
+		return sum;
+	}
+
+	public void setSum(Double sum) {
+		this.sum = sum;
+	}
+
+	public Long getType() {
+		return type;
+	}
+
+	public void setType(Long type) {
+		this.type = type;
+	}
+
+
+
+
+
+
+
+	
+}

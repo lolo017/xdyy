@@ -1,0 +1,1095 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ page import="aisino.reportform.util.base.SecurityUtil"%>
+<%@ page import="aisino.reportform.model.base.SessionInfo"%>
+<%@ page import="aisino.reportform.util.base.ConfigUtil"%>
+
+<%
+	String contextPath = request.getContextPath();
+	SecurityUtil securityUtil = new SecurityUtil(session);
+	//UserInfo userInfo = (UserInfo) application.getAttribute("userInfo");
+	SessionInfo sessionInfo = (SessionInfo) session
+			.getAttribute("sessionInfo");
+	String ssflbmbbh = ConfigUtil.get("ssflbmbbh");
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<jsp:include page="../../../inc.jsp"></jsp:include>
+<script type="text/javascript">
+	var grid;	//查询结果
+	var is_open = 0;//税盘开启状态
+	var activex;	//开票软件实例
+	var ssContent;	//纸票组件接口税收分类编码内容
+	var loadflag=0;	//页面grid加载标志
+	
+	$(function() {
+		//订单限额正则验证
+		/* $("#limitAmount").blur(function(){
+			var limitAmount=$("#limitAmount").val();
+			var reg=/^(1|[1-9]\d?|100)$/;
+			if(!reg.test(limitAmount)){
+				alert("请输入1-100整数限额！");
+				$("#limitAmount").val('');
+			}
+		}); */
+		$('#findShop').combobox({
+	        url:sy.contextPath + '/base/fpmng/order!doNotNeedSecurity_getGyShopcombobox.sy',
+	        valueField:'shop_code',
+	        textField:'shop_name',
+	        editable:false,  //是否可编辑
+	        onSelect:function(){  
+		        $("#shop_name").val($("#findShop").combobox('getText')); 
+		    }  
+	    });
+		//grid加载数据
+		grid = $('#grid').datagrid({
+			title : '',
+			url : sy.contextPath
+					+ '/base/fpmng/order!getOrderListGrid.sy',
+			striped : true,
+			rownumbers : true,
+			pagination : true,
+			queryParams:{flag:loadflag},
+			singleSelect : false,
+			idField : 'OHID',
+			sortOrder : 'desc',
+			pageSize : 50,
+			pageList : [ 5, 10, 15, 20, 30, 50, 100, 200, 300,
+					500, 1000 ],
+			frozenColumns : [ [
+					{
+						field : 'checkop',
+						title : '<input id=\"checkAll\" type=\"checkbox\"  >',
+						width : 30,
+						formatter : function(value, row) {
+							return "<input type=\"checkbox\"  name=\"check\" value=\"" + row.OHID + "\" >";
+						}
+					},
+					{
+						width : '60',
+						title : '操作',
+						field : 'action',
+						align : 'center',
+						formatter : function(value, row) {
+							var str = '';
+							<%if (securityUtil.havePermission("/base/fpmng/order!checkOrder")) {%>
+								str += sy
+									.formatString(
+											'<img class="iconImg ext-icon-vcard" title="查看" onclick="checkOrder(\'{0}\');"/>',
+											row.OHID);
+ 							<%}%>
+							<%if (securityUtil.havePermission("/base/fpmng/order!editOrderDetail")) {%>
+								str += sy
+									.formatString(
+											'<img class="iconImg ext-icon-vcard" title="修改" onclick="updateOrder(\'{0}\');"/>',
+											row.OHID);
+ 							<%}%>
+							return str;
+						}
+					} ] ],
+			columns : [ [  {
+				width : '180',
+				title : '发票编号',
+				field : 'OHID',
+				halign : 'center',
+				//sortable : true,
+				//hidden : true
+			}, {
+				width : '150',
+				title : '获取日期',
+				field : 'CREATETIME',
+				halign : 'center',
+				sortable : true
+			}, {
+				width : '240',
+				title : '购方名称',
+				field : 'GFMC',
+				halign : 'center',
+				sortable : true
+			}, {
+				width : '120',
+				title : '购方税号',
+				field : 'GFSH',
+				halign : 'center'
+			},{
+				width : '180',
+				title : '购方地址电话',
+				field : 'GFDZDH',
+				halign : 'center'
+			}, {
+				width : '60',
+				title : '开票人',
+				field : 'KPR',
+				align : 'center',
+				//sortable : true
+			}, {
+				width : '60',
+				title : '多税率',
+				field : 'MIX',
+				align : 'center',
+				sortable : true,
+				hidden : true,
+				formatter : function(value, row) {
+					switch(value) {
+						case '0' : return '否'; break;
+						case '1' : return '是'; break;
+						default : return '未知'; break;
+					}
+				}
+			}, {
+				width : '60',
+				title : '发票种类',
+				field : 'FPZL',
+				align : 'center',
+				sortable : true,
+				formatter : function(value, row) {
+					switch(value) {
+						case '0' : return '专票'; break;
+						case '2' : return '普票'; break;
+						case '41' : return '卷票'; break;
+						case '51' : return '电子发票'; break;
+						default : return '其他'; break;
+					}
+				}
+			}, {
+				width : '60',
+				title : '税率',
+				field : 'SLV',
+				align : 'center',
+				sortable : true,
+				//hidden : true
+			}, {
+				width : '100',
+				title : '税价合计',
+				field : 'TOTAL',
+				halign : 'center',
+				//sortable : true
+			}, {
+				width : '50',
+				title : '商品行',
+				field : 'SPHS',
+				halign : 'center',
+				//sortable : true
+			}, {
+				width : '100',
+				title : '日志',
+				field : 'ERRLOG',
+				halign : 'center',
+				//sortable : true
+			} ] ],
+			toolbar : '#toolbar',
+			onBeforeLoad : function(data) {
+				parent.$.messager.progress({
+					text : '数据加载中....'
+				});
+				
+			},
+			onClickRow:function(rowIndex,rowData){
+				$(this).datagrid('unselectRow',rowIndex);
+			},
+			onLoadSuccess : function(data) {
+				//console.log(data);
+				$('.iconImg').attr('src', sy.pixel_0);
+				parent.$.messager.progress('close');
+				/* if(data.total==0){
+					$.messager.alert('提示',
+							"没有数据",
+							'info');
+				} */
+				
+				//提示: 本页显示记录存在的负数订单数量, 存在则提示
+				var has_f=0;
+				for (var rNo=0; rNo < data.rows.length; rNo++) {
+					if(data.rows[rNo].TOTAL < 0) {
+						has_f++;
+					}
+				}
+				if (has_f > 0 && has_f < data.rows.length ) {
+					alert("本页存在"+has_f+"张单据总金额为负!");
+				}
+				
+				//checkbox全选
+				$("#checkAll").on("click",function () {
+					//console.log($(this).is(':checked'));
+			        if ($(this).is(':checked')) {
+			            $("input[name='check']").prop("checked", true);
+			        } else {
+			            $("input[name='check']").prop("checked", false);
+			        }
+				});
+			}, //end onLoadSuccess;
+			
+		});
+			
+	});
+	
+	
+	var dialog;
+	//查看单据明细
+	function checkOrder(id){
+		dialog = parent.sy.modalDialog({
+			title : '单据明细',
+			url : sy.contextPath + '/securityJsp/base/aisinoKp/OrderForm.jsp?id=' + id,
+			height : 560,
+			width : 1000,
+		});
+	}
+	//修改单据明细
+	function updateOrder(id){
+		dialog = parent.sy.modalDialog({
+			title : '单据明细',
+			url : sy.contextPath + '/securityJsp/base/aisinoKp/OrderUpdate.jsp?id=' + id,
+			height : 560,
+			width : 1020,
+			onClose: function(){
+				grid.datagrid('reload');
+			}
+		});
+	}
+	//从t_orderdata表获取新订单数据
+	function generateOrder() {
+		var url=sy.contextPath + '/base/fpmng/order!xd_generateOrder.sy';
+		parent.$.messager.progress({
+			text : '数据处理中...'
+		});
+		$.post(url,function(result){
+			if(result.success){
+				parent.$.messager.alert('完成', result.msg);
+				$('#grid').datagrid('load');
+			}
+			parent.$.messager.progress('close');
+		},'json');
+	}
+	
+	//将0.17税率转换为17税率
+	function updateTax() {
+		var url=sy.contextPath + '/base/fpmng/order!updateTax.sy';
+		$.post(url,function(result){
+			alert(result.msg);
+		},'json');
+	}
+	
+	//退回订单至中间库
+	function returnOrder() {
+		var param=new Array();
+		$("input[name='check']").each(function(){
+			if($(this).is(':checked')){
+				param.push($(this).val());
+			}
+		});
+		
+		var url=sy.contextPath + '/base/fpmng/order!returnOrder.sy';
+		if(param.length>0){
+			parent.$.messager.progress({
+				text : '数据处理中...'
+			});
+			$.post(url,{ohids:JSON.stringify(param)},function(result){
+				parent.$.messager.progress('close');
+				if(result.success){
+					parent.$.messager.alert('完成', result.msg);
+					grid.datagrid('reload');
+				}else{
+					parent.$.messager.alert('提示', result.msg, 'info');
+				}
+			},'json');
+		}else{
+			alert("请勾选要退回的订单！");
+		}
+	}
+	//订单商品行数超限拆分
+	function splitByLineOver(){
+		var url=sy.contextPath + '/base/fpmng/order!splitByLineOver.sy';
+		var param=new Array();
+		$("input[name='check']").each(function(){
+			if ($(this).is(':checked')) {
+				param.push($(this).val());
+			}
+		});
+		parent.$.messager.progress({
+			text : '数据处理中...'
+		});
+		$.post(url,{ohids:JSON.stringify(param),max_size:$("#max_size").val()},function(result){
+			parent.$.messager.progress('close');
+			parent.$.messager.alert('info',"拆分完成!");
+			grid.datagrid('reload');
+		},'json');
+		
+	}
+	//恢复未开票订单至初始状态
+	function initOrder() {
+		$.messager.confirm("操作提示", "确定要恢复当前所选单据吗？", function (confirm) {
+			if (confirm) {
+			var url=sy.contextPath + '/base/fpmng/order!initOrder.sy';
+			var param=new Array();
+			$("input[name='check']").each(function(){
+				if ($(this).is(':checked')) {
+					param.push($(this).val());
+				}
+			});
+			parent.$.messager.progress({
+				text : '数据处理中...'
+			});
+			if(param.length>0){
+				$.post(url,{ohids:JSON.stringify(param)},function(result){
+					parent.$.messager.progress('close');
+					if(result.success){
+						 $.post(sy.contextPath + '/base/fpmng/order!generateOrder.sy',function(result){
+							grid.datagrid('reload');
+						},'json'); 
+						parent.$.messager.alert('完成', result.msg);
+						
+						//grid.datagrid('reload');
+					} else {
+						parent.$.messager.alert('提示',result.msg,'info');
+					}
+				},'json');
+			}else{
+				alert("请勾选要恢复的订单！");
+			}
+		}
+		});
+	}
+	//商品行汇总
+	function mixOrderGoods(){
+		var url=sy.contextPath + '/base/fpmng/order!mixOrderGoods.sy';
+		var param=new Array();
+		$("input[name='check']").each(function(){
+			if ($(this).is(':checked')) {
+				param.push($(this).val());
+			}
+		});
+		
+		if(param.length>0){
+			parent.$.messager.progress({
+				text : '数据处理中...'
+			});
+		//alert(param.join(','));
+			$.post(url,{ohids:JSON.stringify(param)},function(result){
+				
+				if(result.success){
+					parent.$.messager.progress('close');
+					parent.$.messager.alert('完成', result.msg);
+					grid.datagrid('reload');
+				}
+			},'json');
+		}else{
+			alert("请勾选要汇总的订单！");
+		}
+	}
+	//超限额拆分
+	function splitByAmount(){
+		var url=sy.contextPath + '/base/fpmng/order!splitByAmount.sy';
+		var param=new Array();
+		var limitAmount=$("#limitAmount").val();
+		$("input[name='check']").each(function(){
+			if ($(this).is(':checked')) {
+				param.push($(this).val());
+			}
+		});
+		if(limitAmount==""){
+			alert("请输入限额！");
+			return;
+		}
+		if(param.length>0){
+			$.post(url,{limitAmount:limitAmount,ohids:JSON.stringify(param)},function(result){
+				if(result.success){
+					parent.$.messager.alert('完成', result.msg);
+				}else{
+					parent.$.messager.alert('提示', result.msg,'info');
+				}
+				$('#grid').datagrid('load');
+			},'json');
+		}else{
+			alert("请选择要拆分的单据！");
+		}
+		
+	}
+	//拆分多税率单据至单税率单据
+	function splitByTax() {
+		var url=sy.contextPath + '/base/fpmng/order!splitByTax.sy';
+		var param=new Array();
+		$("input[name='check']").each(function(){
+			if ($(this).is(':checked')) {
+				param.push($(this).val());
+			}
+		});
+		if(param.length>0){
+		parent.$.messager.progress({
+			text : '数据处理中...'
+		});
+		$.post(url,{ohids:JSON.stringify(param)},function(result){
+			parent.$.messager.alert('成功', '拆分完成	');
+			$('#grid').datagrid('load');
+		},'json');
+		}else{
+			alert("请勾选要拆分的订单");
+		}
+	}
+	
+	//多单据合并（相同商品不汇总）
+	function mixOrder() {
+		var url=sy.contextPath + '/base/fpmng/order!mixOrder.sy';
+		var param=new Array();
+		$("input[name='check']").each(function(){
+			if ($(this).is(':checked')) {
+				param.push($(this).val());
+			}
+		});
+		if(param.length<=1){
+			alert("请至少选择两张要合并的单据！");
+		} else {
+			parent.$.messager.progress({
+				text : '数据处理中...'
+			});
+			$.post(url,{ohids:JSON.stringify(param)},function(result){
+				parent.$.messager.progress('close');
+				parent.$.messager.alert('成功', result.msg);
+				grid.datagrid('reload');
+			},'json');
+		}
+	}
+	
+	
+	//负数做折扣
+	function discount() {
+		parent.$.messager.progress({
+			text : '数据加载中....'
+		});
+		var url=sy.contextPath + '/base/fpmng/order!discountPartByValue.sy';
+		var param=new Array();
+		$("input[name='check']").each(function(){
+			if ($(this).is(':checked')) {
+				param.push($(this).val());
+			}
+		});
+		if(param.length<1){
+			alert("请选择折扣的单据！");
+		} else {
+			$.post(url,{ohids:JSON.stringify(param)},function(result){
+				
+				if(result.success){
+					if(result.msg!=""){
+						parent.$.messager.alert('提示', result.msg+"单据超过折扣率，无法折扣",'info');
+					}else{
+						parent.$.messager.alert('成功', "折扣完成！");
+					}
+					grid.datagrid('reload');
+				}else{
+					
+				}
+				parent.$.messager.progress('close'); 
+			},'json');
+		}
+	}
+	
+	
+	//所选订单开票
+	function invoice() {
+		parent.$.messager.progress({
+			text : '数据加载中....'
+		});
+		var param=new Array();
+		//获取勾选订单头主键
+		$("input[name='check']").each(function(){
+			if ($(this).is(':checked')) {
+				param.push($(this).val());
+			}
+		});
+		
+		//根据ohids查找开票信息
+		var url=sy.contextPath + '/base/fpmng/order!invoice.sy';
+		$.post(url,{ ohids : param.join(',') },function(result){
+			if(result.success){
+				
+				//alert("准备开具:"+result.obj.length+"张发票!");
+				//打开金穗盘
+				opencar();
+				
+				//获取金税盘实例
+				var a = activex;
+					
+			//传入开票信息
+				for(var kpNo=0; kpNo < result.obj.length; kpNo++){
+					
+					var fpList = result.obj[kpNo];	//开票信息字符串
+					var fpHead = fpList[0];	//发票头信息
+					var fpInfo = fpList[1];	//发票明细
+					
+					//alert("开始初始化发票");
+					//初始化发票
+					a.InvInfoInit();
+					
+					//alert("发票头参数传入:fpHead.InfoInvoicer="+kpr);
+					//发票头信息参数传入
+					a.InfoKind=fpHead.FPZL;	//发票种类（0增值税专用发票;1废旧物资发票;2增值税普通发票）
+					a.InfoClientName=fpHead.GFMC;  //购方名称
+					a.InfoClientTaxCode=fpHead.GFSH; //购方税号
+					a.InfoClientBankAccount=fpHead.GFYHZH; //购方开户行及账号
+					a.InfoClientAddressPhone=fpHead.GFDZDH;  //购方地址电话
+					//
+					a.InfoSellerBankAccount="中国建设银行股份公司简阳市支行 51001687408051505597 ";	//销方银行账户
+					a.InfoSellerAddressPhone="简阳市简城镇红建路南段水岸人家2号楼二层A区 028-27299910";	//销方地址电话
+
+					a.InfoInvoicer=fpHead.KPR;	//开票人
+					a.InfoChecker=fpHead.FHR;	//复核人
+					a.InfoCashier=fpHead.SKR;	//收款人
+					a.InfoNotes=fpHead.BZ;	//备注
+					//a.InfoTaxRate = fpHead.SLV;     //税率
+					
+					//alert("fpInfo.infoLists.length=="+fpInfo.infoLists.length);
+					//alert("fpList[1]=="+fpList[1].infoLists[0].SPMC);
+					//console.info(invoiceHead[1].infoLists[0]);
+				//发票明细参数传入
+					//发票明细信息清空
+	    			a.ClearInvList();
+					for (var infoNo=0; infoNo < fpInfo.infoLists.length; infoNo++) {
+	    				a.InvListInit();//循环插入费用项目列表与a.AddInvList()一起使用
+						//alert("商品行金额=="+fpInfo.infoLists[infoNo].JE);
+						var str = fpInfo.infoLists[infoNo].SPMC;
+						//alert(str.indexOf("折扣"));
+						var spje = fpInfo.infoLists[infoNo].JE;
+						//alert(spje);
+						if (spje != 0.0000000000000000) {
+							//alert("商品金额不为0");
+				 	  	
+							if (str.indexOf("折扣") > -1) {
+								//alert("折扣行设置"+fpInfo.infoLists[infoNo].SPMC);
+								//折扣行
+								a.ListGoodsName = fpInfo.infoLists[infoNo].SPMC;  //商品名称
+								a.ListAmount = fpInfo.infoLists[infoNo].JE;	//金额
+								a.ListPriceKind = fpInfo.infoLists[infoNo].HSBZ;	//含税价标志:0-不含税,1-含税
+								a.InfoTaxRate = fpHead.SLV;     //税率
+								a.ListTaxItem="1510";
+							} else {
+								//alert("正价设置");
+								a.ListGoodsName = fpInfo.infoLists[infoNo].SPMC;  //商品名称
+						 	    a.ListStandard = fpInfo.infoLists[infoNo].GGXH;  //商品规格
+						 	    a.ListUnit = fpInfo.infoLists[infoNo].DW;   //商品单位
+						 	  	a.ListNumber = fpInfo.infoLists[infoNo].SL;      //商品数量
+						 	  	a.ListPrice = fpInfo.infoLists[infoNo].DJ;       //商品单价
+						 	  	a.ListAmount = fpInfo.infoLists[infoNo].JE;	//金额
+						 	  	a.InfoTaxRate = fpInfo.infoLists[infoNo].SLV;     //税率
+						 	  	a.ListPriceKind = fpInfo.infoLists[infoNo].HSBZ;	//含税价标志:0-不含税,1-含税
+						 	  	
+								//以下XML为发送税收分类编码举例
+								ssContent="<?xml version=\"1.0\" encoding=\"GBK\"?>";
+								ssContent+="<FPXT>";
+								ssContent+="<INPUT>";
+								ssContent+="<GoodsNo>";
+								ssContent+="<GoodsNoVer><%=ssflbmbbh%></GoodsNoVer>";					//编码版本号
+								//税收分类编码
+	
+								ssContent+="<GoodsTaxNo>"+fpInfo.infoLists[infoNo].SSFLBM+"</GoodsTaxNo>";	//税收分类编码
+								if ("0" == fpInfo.infoLists[infoNo].SLV) {
+									//alert(0);
+									ssContent+="<TaxPre>1</TaxPre>";				//是否享受税收优惠政策0：不享受，1：享受
+									ssContent+="<TaxPreCon>免税</TaxPreCon>";			//享受税收优惠政策内容
+									ssContent+="<ZeroTax>1</ZeroTax>";				//零税率标识空：非零税率，0：出口退税，1：免税，2：不征收，3 普通零税率
+								} else {
+									ssContent+="<TaxPre>0</TaxPre>";				//是否享受税收优惠政策0：不享受，1：享受
+									ssContent+="<TaxPreCon></TaxPreCon>";			//享受税收优惠政策内容
+									ssContent+="<ZeroTax></ZeroTax>";				//零税率标识空：非零税率，0：出口退税，1：免税，2：不征收，3 普通零税率
+								}
+								ssContent+="<CropGoodsNo></CropGoodsNo>";			//企业自编码，该字段可为空
+								ssContent+="<TaxDeduction></TaxDeduction>";			//扣除额，该字段可为空-
+								ssContent+="</GoodsNo>";	
+								ssContent+="</INPUT>";
+								ssContent+="</FPXT>";
+	
+								ssXML="<?xml version=\"1.0\" encoding=\"GBK\"?>";
+								ssXML+="<FPXT_COM_INPUT>";
+								ssXML+="<ID>1100</ID>"	;							// 1100 为更新编码相关信息接口业务标识
+								//$.base64.utf8encode = true;
+								//ssContent=$.base64.btoa(ssContent);	
+								ssContent=CharsetUtil.Base64.encode_GBK(ssContent);
+								ssXML+="<DATA>"+ssContent+"</DATA>"	;				//各接口的输入数据报文的BASE64 编码字符串
+								ssXML+="</FPXT_COM_INPUT>";
+								a.BatchUpload(ssXML);
+								
+							}
+						 	a.AddInvList();	//添加发票明细行
+					 	  	
+						}  //判断明细金额是否为0	
+				 	  		
+					} //发票明细行数据存入
+					
+					//开票
+					a.CheckEWM=0;
+					a.Invoice();//传入开票数据
+					
+					//alert("开具发票结果:"+a.RetMsg);
+					//开票成功后返回代码为 4011，然后通过发票代码，发票号码把此发发票查询出来存到数据库
+					if(a.RetCode=="4011") { 
+						//alert("准备查询发票");
+						//查询发票,并将相关信息回写数据库
+						queryInv(a.InfoKind,a.InfoTypeCode,a.InfoNumber);
+						if (a.RetCode == "7011"){
+							rewriteDb(fpHead.OHID);
+						}
+		
+					} else {
+						alert(a.RetMsg);
+						//记录开票错误日志
+						updateErrLog(a.RetMsg,fpHead.OHID);
+						
+					}
+				
+				}//一张发票开具回写完毕
+				
+				closecar();//关闭金税盘
+				
+				grid.datagrid('load');
+			}
+				parent.$.messager.progress('close'); 
+		},'json');
+		
+	}//invoice()所选订单开票结束
+	
+	
+	//打开金穗卡
+	function opencar(){
+		if(is_open==0){
+			var a=new ActiveXObject("TaxCardX.GoldTax"); //创建金税盘实例
+			a.CertPassWord=12345678;
+			a.OpenCard();
+			if(a.RetCode=="1011" || a.RetCode=="3001"){
+				activex = a;
+				is_open=1;
+	        	var mess="金税盘开启成功！";
+				//alert(mess);
+			} else {
+				alert("金税盘开启失败,错误代码："+a.RetCode+"，错误信息："+a.RetMsg);
+				//alert("金税盘开启失败,错误代码："+a.RetCode);
+			}
+	    }else{
+	    	closecar();
+	    	//alert("金税盘已打开，无需再打开！");
+	    	opencar();
+	    }
+	}
+	
+	
+	//关闭金税盘
+	function closecar(){
+		is_open=0;
+		var a = activex;
+		a.CloseCard();
+	}
+	
+	
+	//开票错误信息回写数据库
+	function updateErrLog(retMsg,ohid) {
+		//记录开票错误日志
+		$.post(sy.contextPath + '/base/fpmng/order!doNotNeedSecurity_updateErrLog.sy', 
+			{
+				errlog : retMsg,	//错误描述信息
+				ohid : ohid	//订单头主键
+			}, function(result) {
+				if(result.success){
+					alert("错误信息已保存!");
+				}
+					
+		}, 'json');
+	}
+	
+	
+	//发票信息查询
+	function queryInv(InfoKind,InfoTypeCode,InfoNumber){
+		//opencar();//测试完需注释
+		
+		var a = activex;
+		//alert("InfoKind"+InfoKind+",InfoTypeCode"+InfoTypeCode+",InfoNumber"+InfoNumber+",order_id"+order_id);
+		a.InfoKind = InfoKind;
+		a.InfoTypeCode = InfoTypeCode;
+		a.InfoNumber = InfoNumber;
+		//alert("开始查询");
+		a.QryInv();	//调用接口查询发票
+		
+		//closecar();//测试完需注释
+	}
+	
+	
+	//发票信息查询
+	function rewriteDb(order_id){
+		//opencar();//测试完需注释
+		var a = activex;
+		$.post(sy.contextPath + '/base/fpmng/order!doNotNeedSecurity_updateInvoice.sy', 
+			{
+				errlog : a.RetMsg,	//错误描述信息
+				fpdm : a.InfoTypeCode,	//发票代码
+				fphm : a.InfoNumber,	//发票号码
+				fpzl : a.InfoKind,	//发票种类
+				amount : a.InfoAmount,	//不含税金额
+				tax_amount : a.InfoTaxAmount,	//税额
+				createtime : a.InfoDate,	//开票时间
+				xml : a.info,
+				ohid : order_id,	//订单头主键
+				
+				is_print : a.PrintFlag,	//打印标志
+				is_zf : a.CancelFlag,	//作废标志
+				
+			}, function(result) {
+				if(result.success){
+					alert(result.msg);
+					grid.datagrid('load');
+				}
+					
+		}, 'json');
+		//closecar();//测试完需注释
+	}
+	
+	
+	//所选订单开电子发票
+	function einvoice() {
+		parent.$.messager.progress({
+			text : '数据加载中....'
+		});
+		var param=new Array();
+		//获取勾选订单头主键
+		$("input[name='check']").each(function(){
+			if ($(this).is(':checked')) {
+				param.push($(this).val());
+			}
+		});
+		
+		//根据ohids查找开票信息
+		var url=sy.contextPath + '/base/fpmng/order!einvoice.sy';
+		$.post(url,{ ohids : param.join(','), qz_lx : "0", },function(result){
+			if(result.success){
+				//开具电子发票成功
+				//var url1=sy.contextPath + '/base/fpmng/order!rewrite.sy';
+				//$.post(url1,{ ohids : param.join(',')},function(result){},'json');
+				parent.$.messager.progress('close'); 
+				alert(result.msg);
+			} else {
+				parent.$.messager.progress('close'); 
+				alert(result.msg);
+			}
+			grid.datagrid('load');
+		},'json');
+		
+	}//einvoice()所选订单开票结束
+	
+	/* //上传Excel
+	function addPlsc(){
+		$.messager.progress({ 
+			title:'请稍后', 
+			msg:'数据提交中...'
+			});
+		$("#plscAdd_form").form("submit",{
+			onSubmit: function () {
+				var flag = $("#plscAdd_form").form('validate');
+				var fileN = $("#plsc_file").val();
+				if(fileN.indexOf(".xls") == -1){
+				 	alert("请正确选择EXCEL文件！");
+					flag = false;
+				 }
+				 if(!flag)
+				 	$.messager.progress('close');
+	             return flag;
+			},
+			url:sy.contextPath + '/base/fpmng/import-excel!importEInvoiceInfoExcel.sy',
+			success:function(data){ 
+				$.messager.progress('close');
+		    	var data = eval('(' + data + ')'); 
+		    	if(data.success){
+		    		$.messager.alert('系统提示', '导入成功！', 'info');
+		    		$("#plsc_file").val(null);
+		    	}else{
+		    		$.messager.alert('系统提示', data.msg, 'error');
+		    	}
+		    }
+		});
+	} */
+	
+	
+	//税收分类编码匹配
+	function ssflbmpp(){
+		parent.$.messager.progress({
+			text : '数据处理中...'
+		});
+		$.post(sy.contextPath + '/base/fpmng/order!ssflbmpp.sy',function(result){
+			if(result.success) {
+				if (result.msg != null && result.msg != "") {
+					alert(result.msg);
+				} else {
+				}
+			}
+					parent.$.messager.progress('close');
+		},'json');
+		
+	}
+	
+	//购方信息匹配
+	function gfpp(){
+		parent.$.messager.progress({
+			text : '数据处理中...'
+		});
+		$.post(sy.contextPath + '/base/fpmng/order!gfpp.sy',function(result){
+			if(result.success) {
+				if (result.msg != null && result.msg != "") {
+					alert(result.msg);
+				} else {
+				}
+			}
+					parent.$.messager.progress('close');
+		},'json');
+		
+	}
+	
+	function saveGyResponseMsg(){
+		parent.$.messager.progress({
+			text : '数据处理中...'
+		});
+		//alert($("#findShop").combobox('getText'));
+		$.post(sy.contextPath + '/base/fpmng/order!saveGyResponseMsg.sy',
+				{start_time:$("#createtime1").val(),end_time:$("#createtime2").val(),
+					shop_code:$("#findShop").combobox('getValue')},
+				function(result){
+			parent.$.messager.progress('close');
+			parent.$.messager.alert('info',result.msg);
+		},'json');
+	}
+	
+</script>
+<title>单据管理</title>
+</head>
+
+<body class="easyui-layout" data-options="fit:true,border:false">
+	<div id="toolbar" style="display: none;">
+		<!-- 查询条件筛选 -->
+		<form id="searchForm" method="post">
+			<table>
+				<tr>
+					<!-- <td><div class="datagrid-btn-separator"></div></td>
+					<td><label>单据号码:</label></td>
+					<td><input id="djhm" style="width: 120px;" /></td>
+					<td><div class="datagrid-btn-separator"></div></td> -->
+
+					<td><label>获取日期:</label></td>
+					<td colspan="4"><input id="createtime1" name="createtime1" class="Wdate"
+						onclick="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd'})"
+						style="width: 100px;" />-<input id="createtime2"
+						name="createtime2" class="Wdate"
+						onclick="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd'})"
+						style="width: 100px;" /></td>
+					<td><div class="datagrid-btn-separator"></div></td>
+
+					<!-- <td><label>多税率订单:</label></td> -->
+					<td><select id="mix" name="mix" style="width: 120px;">
+							<option value="">是否多税率订单</option>
+							<option value="1">是</option>
+							<option value="0">否</option>
+					</select></td>
+					<td><div class="datagrid-btn-separator"></div></td>
+					<!-- <td><label>发票种类:</label></td> -->
+					<td><select id="fpzl" name="fpzl" style="width: 80px;">
+							<option value="">发票种类</option>
+							<option value="0">专票</option>
+							<option value="2">普票</option>
+							<option value="51">电子发票</option>
+					</select></td>
+
+					<td><div class="datagrid-btn-separator"></div></td>
+					<!-- <td><label>订单金额:</label></td> -->
+					<td colspan="2"><select id="ddje" name="ddje"
+						style="width: 80px;">
+							<option value="">订单金额</option>
+							<option value="1">正数金额</option>
+							<option value="0">非正金额</option>
+					</select></td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<!-- <td><label>购方名称:</label></td> -->
+					<td><input id="gfmc" name="gfmc" style="width: 120px;" placeholder="请输入购方名称" /></td>
+					<td><div class="datagrid-btn-separator"></div></td>
+					<!-- <td><label>单据号码:</label></td> -->
+					<td><input id="djhm" name="djhm" style="width: 120px;" placeholder="请输入单据号码" /></td>
+					<td><div class="datagrid-btn-separator"></div></td>
+					
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						data-options="iconCls:'ext-icon-zoom',plain:true"
+						onclick="grid.datagrid('load',sy.serializeObject($('#searchForm')));">查询</a>
+						<!-- <a href="javascript:void(0);" class="easyui-linkbutton"
+						data-options="iconCls:'ext-icon-zoom_out',plain:true"
+						onclick="$('#searchForm input').val('');$('#statusselector').val('999');grid.datagrid('load',{});">重置查询</a> -->
+					</td>
+					<td>税收分类编码版本号:</td>
+					<td><input id="ssflbmbbh" name="ssflbmbbh" style="width:60px;" value=<%=ssflbmbbh %> /></td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!saveGyResponseMsg")) {
+					%>
+				    <td>店铺名称:</td>
+					<td><input name="findShop" id="findShop" type="text" style="width:200px" class="easyui-combobox" /></td>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="saveGyResponseMsg();">获取管易订单</a></td>
+					<td style="display:none"><input id="shop_name" name="shop_name" type="text" style="width:200px" /></td>
+					<%} %>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!generateOrder")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="generateOrder();">获取订单</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!updateTax")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="updateTax();">更新税率</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!returnOrder")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="returnOrder();">退回订单</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!splitByLineOver")) {
+					%>
+					<td><div class="datagrid-btn-separator"></div></td>
+					<td>商品行数：
+						<select id="max_size" name="max_size" style="width: 50px;">
+							<option value="8">8行</option>
+							<option value="100">100行</option>
+					</select>
+					</td>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="splitByLineOver();">商品行拆分</a></td>
+					<td><div class="datagrid-btn-separator"></div></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!initOrder")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="initOrder();">恢复订单</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!discountByValue")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="discount();">折扣</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!invoice")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="invoice();">开具纸票</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!einvoice")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="einvoice();">开具电子发票</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!invoice")) {
+					%>
+					<!-- 测试查询发票功能  -->
+					<!-- 
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						data-options="iconCls:'ext-icon-search'" onclick="queryInv('0','5100141530','360428','2017091312509');">发票查询</a></td>
+					  -->
+					<%
+						}
+					%>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!splitByTax")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="splitByTax();">税率拆分</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!splitByAmount")) {
+					%>
+					<td><div class="datagrid-btn-separator"></div></td>
+					<td colspan="3"><label>订单限额(万):</label>
+				        <input class="easyui-numberspinner" value="10" id="limitAmount" style="width:50%;" data-options="
+				        		min:1,max:100,
+				                    onChange: function(value){
+				                        $('#vv').text(value);
+				                    }
+				                ">
+					<!-- <input id="limitAmount" style="width: 50px;" />万 -->
+						<a href="javascript:void(0);" class="easyui-linkbutton"
+						onclick="splitByAmount();">超限拆分</a></td>
+					<td><div class="datagrid-btn-separator"></div></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!mixOrder")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="mixOrder();">单据合并</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!mixOrderGoods")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						onclick="mixOrderGoods();">商品行汇总</a></td>
+					<%
+						}
+					%>
+					
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!ssflbmpp")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="ssflbmpp();">编码匹配</a></td>
+					<%
+						}
+					%>
+					<%
+						if (securityUtil.havePermission("/base/fpmng/order!gfpp")) {
+					%>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton"
+						 onclick="gfpp();">购方匹配</a></td>
+					<%
+						}
+					%>
+
+				</tr>
+			</table>
+		</form>
+
+	</div>
+	<div data-options="region:'center',fit:true,border:false">
+		<table id="grid" data-options="fit:true,border:false"></table>
+	</div>
+</body>
+</html>

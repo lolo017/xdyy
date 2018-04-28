@@ -1,0 +1,8 @@
+package aisino.reportform.service.base;
+
+import aisino.reportform.model.base.InvoiceLine;
+import aisino.reportform.service.BaseServiceI;
+
+public interface InvoiceLineServiceI extends BaseServiceI<InvoiceLine> {
+
+}

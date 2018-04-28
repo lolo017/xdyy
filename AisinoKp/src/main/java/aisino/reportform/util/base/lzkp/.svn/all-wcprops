@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp
+END
+Base64.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/Base64.java
+END
+Constants.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/Constants.java
+END
+Base64Helper.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/Base64Helper.java
+END
+PKCS7.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/PKCS7.java
+END
+PageData.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/PageData.java
+END
+Signature.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/Signature.java
+END
+TimerUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/TimerUtil.java
+END
+FileZip.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/FileZip.java
+END
+HttpclientUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/HttpclientUtil.java
+END
+CaConstant.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/CaConstant.java
+END
+MessageGZIP.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/util/base/lzkp/MessageGZIP.java
+END

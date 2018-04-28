@@ -1,0 +1,341 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl
+END
+BudgetServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BudgetServiceImpl.java
+END
+DoorsInformationMServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/DoorsInformationMServiceImpl.java
+END
+StudyServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/StudyServiceImpl.java
+END
+BankfeeServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BankfeeServiceImpl.java
+END
+SqlconditionServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SqlconditionServiceImpl.java
+END
+BankratioServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BankratioServiceImpl.java
+END
+PageServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/PageServiceImpl.java
+END
+BankprivatenumberServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BankprivatenumberServiceImpl.java
+END
+ScjsInvoiceLogServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/ScjsInvoiceLogServiceImpl.java
+END
+ContractInfoDetailServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/ContractInfoDetailServiceImpl.java
+END
+WorkServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/WorkServiceImpl.java
+END
+ContractStepChargeServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/ContractStepChargeServiceImpl.java
+END
+EmpDataServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/EmpDataServiceImpl.java
+END
+TicketTaoDaServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/TicketTaoDaServiceImpl.java
+END
+BankcardnumberServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BankcardnumberServiceImpl.java
+END
+SysOrgServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SysOrgServiceImpl.java
+END
+JxbmServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/JxbmServiceImpl.java
+END
+SyorganizationServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SyorganizationServiceImpl.java
+END
+PageCodeServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/PageCodeServiceImpl.java
+END
+SyroleServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SyroleServiceImpl.java
+END
+FileUploadServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/FileUploadServiceImpl.java
+END
+TicketStoreImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/TicketStoreImpl.java
+END
+SysProductServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SysProductServiceImpl.java
+END
+EmpleadServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/EmpleadServiceImpl.java
+END
+TicketJbServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/TicketJbServiceImpl.java
+END
+ErrorQZXmlServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/ErrorQZXmlServiceImpl.java
+END
+TicketTypeServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/TicketTypeServiceImpl.java
+END
+TicketFillInvoiceMXServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/TicketFillInvoiceMXServiceImpl.java
+END
+TicketKHXXServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/TicketKHXXServiceImpl.java
+END
+TaxRateServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/TaxRateServiceImpl.java
+END
+ShippingListServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/ShippingListServiceImpl.java
+END
+InvoiceHeadServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/InvoiceHeadServiceImpl.java
+END
+BankpublicnumberServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BankpublicnumberServiceImpl.java
+END
+SyresourcetypeServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SyresourcetypeServiceImpl.java
+END
+ChangeServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/ChangeServiceImpl.java
+END
+PerformanceServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/PerformanceServiceImpl.java
+END
+SyuserServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SyuserServiceImpl.java
+END
+SpecificServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SpecificServiceImpl.java
+END
+TicketZfqkServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/TicketZfqkServiceImpl.java
+END
+BanktransactionrecordServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BanktransactionrecordServiceImpl.java
+END
+CommunicateServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/CommunicateServiceImpl.java
+END
+CusposServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/CusposServiceImpl.java
+END
+ContractChargeInfoServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/ContractChargeInfoServiceImpl.java
+END
+SyresourceServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SyresourceServiceImpl.java
+END
+BankposcustomerServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BankposcustomerServiceImpl.java
+END
+TicketFillInvoiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/TicketFillInvoiceImpl.java
+END
+ContractInfoMainServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/ContractInfoMainServiceImpl.java
+END
+SyonlineServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/SyonlineServiceImpl.java
+END
+BankCustomerServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BankCustomerServiceImpl.java
+END
+RentCustInfoServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/RentCustInfoServiceImpl.java
+END
+DoorsInformationDServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/DoorsInformationDServiceImpl.java
+END
+JxzjServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/JxzjServiceImpl.java
+END
+WordstudyServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/WordstudyServiceImpl.java
+END
+BusinessServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/BusinessServiceImpl.java
+END
+InvoiceLineServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/InvoiceLineServiceImpl.java
+END
+PageCodeWarnServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/dzfp_dyym/!svn/ver/7/trunk/AisinoKp/src/main/java/aisino/reportform/service/base/impl/PageCodeWarnServiceImpl.java
+END

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EpressMapper">
+	
+	
+	<!-- 更新登录时间 -->
+	<update id="updateLastLogin" parameterType="pd">
+		update "T_COURIER" set 
+		"LAST_LOGIN" = #{LAST_LOGIN} 
+		where "COU_ID" = #{COU_ID}
+	</update>
+	
+	<!-- 判断用户名和密码 -->
+	<select id="getAppUserInfo" parameterType="pd" resultType="pd">
+		select * from "T_COURIER" 
+		where 1=1
+		<if test="USERACCOUNT != null and PASSWD != null">
+	  	and	
+	  		(
+	  		("USERACCOUNT" = #{USERACCOUNT} and "PASSWD" = #{PASSWD})
+	  		or
+	  		("APPPHONE" = #{APPPHONE} and "PASSWD" = #{PASSWD})
+	  		)
+		</if>
+		<if test="USER_ID != null and USER_ID != ''">
+		and "COU_ID" = #{COU_ID}
+		</if>
+	</select>
+	
+
+	
+	<!-- 通过user_id获取数据 -->
+	<select id="findByUiId" parameterType="pd" resultType="pd">
+		select 
+			"USER_ID",
+			"USERNAME",
+			"PASSWORD",
+			"NAME",
+			"RIGHTS",
+			"ROLE_ID",
+			"LAST_LOGIN",
+			"IP",
+			"STATUS",
+			"BZ",
+			"PHONE",
+			"SFID",
+			"START_TIME",
+			"END_TIME",
+			"YEARS",
+			"EMAIL",
+			"NUMBER"
+		from 
+			"SYS_APP_USER"
+		where 
+			"USER_ID" = #{USER_ID}
+	</select>
+	
+	
+	<!-- 通过userAccount获取数据 -->
+	<select id="findObj" parameterType="pd" resultType="pd">
+		select 
+			"COUID",
+			"COU_NAME",
+			"SEX",
+			"IDNUM",
+			"PER_ADDR",
+			"NOW_ADDR",
+			"PHONE",
+			"APP_PHONE",
+			"BRAID",
+			"ENTRY_TIME",
+			"LEAVE_TIME",
+			"STATUE",
+			"CEN_NUM",
+			"USERACCOUNT",
+			"PASSWD"
+		from 
+			"T_COURIER"
+		where 1=1
+		<if test="userAccount !=null and userAccount != ''">
+			and "USERACCOUNT" = #{userAccount}
+		</if>
+		<if test="COUID !=null and COUID != ''">
+			and "COUID" = #{COUID}
+		</if>
+		
+	</select>
+	
+	<!-- 新增快递信息 -->
+	<insert id="saveU" parameterType="pd">
+		insert into "T_EPRESS" (
+			"EXPID",
+			"EXPNUM",
+			"SEN_ID",
+			"SEN_PHONE",
+			"SEN_ADDR",
+			"REC_ID",
+			"REC_PHONE",
+			"REC_ADDR",
+			"STDMODE",
+			"COUID",
+			"DEAL_XGPS",
+			"DEAL_YGPS",
+			"DEAL_TIME",
+			"TYPE",
+		) values (
+			EXPRESS_SEQ.NEXTVAL,
+			#{expnum},
+			${senId},
+			#{senPhone},
+			#{senAddr},
+			#{recId},
+			#{recPhone},
+			#{recAddr},
+			${stdmode},
+			#{couid},
+			#{dealXgps},
+			#{dealYgps},
+			to_date(#{dealTime},'yyyy-MM-dd'),
+			${type}
+		)
+	</insert>
+	
+	<!-- 用户列表(app用户组) -->
+	<select id="userlistPage" parameterType="page" resultType="pd">
+		select  
+			"COUID",
+			"COU_NAME",
+			"SEX",
+			"IDNUM",
+			"PER_ADDR",
+			"NOW_ADDR",
+			"PHONE",
+			"APP_PHONE",
+			"BRAID",
+			"ENTRY_TIME",
+			"LEAVE_TIME",
+			"STATUE",
+			"CEN_NUM",
+			"USERACCOUNT",
+			"PASSWD",
+			"LAST_LOGIN"
+		from "T_COURIER" 
+		where 1 = 1
+		<if test="pd.USERNAME != null and pd.USERNAME != ''"><!-- 用户名检索 -->
+			and(
+				"USERACCOUNT" LIKE CONCAT(CONCAT('%', #{pd.USERNAME}),'%')
+				or
+				"COU_NAME" LIKE CONCAT(CONCAT('%', #{pd.USERNAME}),'%')
+				)
+		</if>
+		<if test="pd.lastLoginStart!=null and pd.lastLoginStart!=''"><!-- 到期时间检索 -->
+			and "ENTRY_TIME" &gt;= to_date(#{pd.lastLoginStart} ,'YYYY-MM-DD')
+		</if>
+		<if test="pd.lastLoginEnd!=null and pd.lastLoginEnd!=''"><!-- 到期时间检索 -->
+			and "LEAVE_TIME" &lt;= to_date(#{pd.lastLoginEnd} ,'YYYY-MM-DD')
+		</if>
+		<if test="pd.STATUS != null and pd.STATUS != ''"><!-- 状态检索 -->
+			and "STATUE"=#{pd.STATUS} 
+		</if>
+	</select>
+	
+	<update id="editU" parameterType="pd">
+		update  "T_COURIER"
+			set 
+				"COU_NAME" = #{username},
+				"SEX" = ${sex},
+				"IDNUM" = #{idnum},
+				"PER_ADDR" = #{perAddr},
+				"NOW_ADDR" = #{nowAddr},
+				"PHONE" = #{phone},
+				"APP_PHONE" = #{appPhone},
+				"BRAID" = ${branchid},
+				"ENTRY_TIME" = to_date(#{entryTime},'yyyy-MM-dd'),
+				<if test="LEAVE_TIME != null and LEAVE_TIME != ''">
+				"LEAVE_TIME"= to_date(#{leaveTime},'yyyy-MM-dd'),
+				</if>
+				"STATUE" = ${statue},
+				"CEN_NUM" = #{cenNum}
+			<if test="passwd != null and passwd != ''">
+				,"PASSWD"	= #{passwd}
+			</if>
+			where "COUID" = #{couId}
+	</update>
+	
+	
+	<!-- 删除用户 -->
+	<delete id="deleteU" parameterType="pd">
+		delete from "T_COURIER" 
+		where 
+			"COUID" = #{COUID}
+	</delete>
+	
+	<!-- 批量删除用户 -->
+	<delete id="deleteAllU" parameterType="String">
+		delete from "T_COURIER"
+		where 
+			"COUID" in
+  			 <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                  #{item}
+             </foreach>
+	</delete>
+	
+</mapper>
